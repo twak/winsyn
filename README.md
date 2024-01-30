@@ -17,17 +17,17 @@ The model requires a resources files with various textures and meshes from diffe
 * The 3D clutter scenes can be downloaded from the [KAUST datastore](). They should be added added to the `exterior_clutter` folder. 
 
 * The script [`import_google_panos.py`](https://github.com/twak/winsyn/blob/main/import/import_google_panos.py) can be used to download the panoramas used for the published dataset. It takes a single argument: your resource folder, and downloads images here in the subfolder `outside`.
- * Alternately, download a [different set of panoramas from google directly](https://sites.google.com/view/streetlearn/dataset).
+  - Alternately, download a [different set of panoramas from google directly](https://sites.google.com/view/streetlearn/dataset).
 
 * Signs can be downloaded from the [Kaust datastore](https://repository.kaust.edu.sa/handle/10754/686575). They should be in the `signs` folder of your resource folder. The downloaded and unzipped files can be split into folders `large`, `medium`, and `small` using the script [`split_signs.py`](https://github.com/twak/winsyn/blob/main/import/import_signs.py).
  * Rename and move the signs using the script `import.signs.py`. It takes two arguments - the root folder of the unzipped signs dataset and the resource folder.
 
 * The interior textures are from matterport. 
- * You can download them by following the instructions (involving sending them a form and getting a [download script](https://github.com/jlin816/dynalang/blob/0da77173ee4aeb975bd8a65c76ddb187fde8de81/scripts/download_mp.py#L4))
- * Run the script thusly to download all the interior panoramas:
-```
-download_mp.py /a/location --type matterport_skybox_images 
-```
+  * You can download them by following the instructions (involving sending them a form and getting a [download script](https://github.com/jlin816/dynalang/blob/0da77173ee4aeb975bd8a65c76ddb187fde8de81/scripts/download_mp.py#L4))
+  * Run the script thusly to download all the interior panoramas:
+  ```
+  download_mp.py /a/location --type matterport_skybox_images 
+  ```
  * extract and convert the downloaded skyboxes into the panoramic image format using the script [`import_matterport.py`](https://github.com/twak/winsyn/blob/main/import/import_matterport.py). It takes two arguments: the root of the downloaded panoramas and your resource folder.
 
 * If you wish to generate the variant with many textures (`texture_rot`), download and unzip the [dtd](https://www.robots.ox.ac.uk/~vgg/data/dtd/) dataset into the `dtd` folder inside your resource folder.
@@ -37,11 +37,12 @@ download_mp.py /a/location --type matterport_skybox_images
 * Set the `resource_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L13) to where you downloaded the resource files
 * Open the `winsyn.blend` file in Blender 3.3. 
 * Open a text pane in blender with the [`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) script
-* Run the script! Generation time varies from 20 sections to a few minutes. Blender sometimes hangs. Some generation may take a very long time depending on the parameters selected.
-* Debugging requires a more challenging setup, I use Pycharm with something like [this](https://code.blender.org/2015/10/debugging-python-code-with-pycharm/) combined with the commented out [`pydevd_pycharm.settrace`](https://github.com/twak/winsyn/blob/main/src/go.py#L66) lines in `go.py`.
+* Run the script! Generation time varies from 20 sections to a few minutes. Blender hangs during generation. Some generation may take a very long time depending on the parameters selected.
+* Debugging requires a more challenging setup, I use Pycharm with something like [this](https://code.blender.org/2015/10/debugging-python-code-with-pycharm/) combined with the commented out [`pydevd_pycharm.settrace`](https://github.com/twak/winsyn/blob/main/src/go.py#L66) lines in `go.py`. The workflow goes something like - edit code in pycharm, switch to blender to run, switch back to pycharm to set breakpoints/inspect elements.
 
 # running headless
 
+* as well as `resource_path` as above...
 * set the `render_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L14) to the location where renders should be written
 * set the number of renders you want in `render_number`.
 * set interactive to False in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L16).
@@ -54,25 +55,26 @@ blender -b /path/to/winsyn/wall.blend --python /path/to/winsyn/src/go.py -- --cy
 
 # running on a cluster.
 
-I deploy on our [ibex](https://www.hpc.kaust.edu.sa/ibex)/slurm cluster to render large datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container and a job script similar to the below. Note the fixed locations for the resources and output folders, specified in the `config.py` file. `output_dataset` is the output dataset name. On ibex I rendered on the p100 and v100 nodes, and run about 10 machines to render 2k images overnight.
+I deploy on our [ibex](https://www.hpc.kaust.edu.sa/ibex)/slurm cluster to render large datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container ([sif file]()) and a job script similar to the below. Note the fixed locations for the resources and output folders, specified in the `config.py` file. `output_dataset` is the output dataset name. On ibex I rendered on the p100 and v100 nodes, and run about 10 machines to render 2k images overnight.
 
+with a `run.sh` script:
 ```
 echo "Welcome to Windows"
 outdir="/ibex/wherever/you/want/output_dataset"
 mkdir -p $outdir
+style=""rgb;labels"
 
 while : # "robustness"
 do
-  SINGULARITYENV_WINDOWZ_STYLE="$1" singularity exec --nv --bind $outdir:_render_path_ --bind /ibex/wherever/you/put/resources:_resource_path_ --bind /ibex/wherever/you/put/code/:_winsyn_path_  /ibex/wherever/you/put//blender_3_3.sif blender -b /ibex/wherever/you/put/winsyn/winsyn.blend --python /ibex/wherever/you/put/windowz/src/go.py -- --cycles-device OPTIX
+  SINGULARITYENV_WINDOWZ_STYLE="$1" singularity exec --nv --bind $outdir:/container/winsyn/output --bind /ibex/winsyn/resources:/container/winsyn/resources --bind /ibex/winsyn:/container/winsyn /ibex/wherever/you/put//blender_3_3.sif blender -b /container/winsyn/winsyn.blend --python /container/winsyn/src/go.py -- --cycles-device OPTIX
   echo "blender crashed. let's try that again..."
 done
 ```
-
-where `_render_path_`, `_resource_path_` are defined in `config.py`. I keep a separate `config.py` on my local machine and server with different resource locations.
+with `config.py` lines `render_path=/container/winsyn/output` and `resource_path=/container/winsyn/resources`.
 
 # variations
 
-These are known as 'styles' in the code and change the behavior of the model (e.g., all-grey walls, or all-nighttime lighting). They are set in the config.py file or using the `WINDOWZ_STYLE` env variable. The sequences below render the variations for various sequences of paramters and create the labels where required.
+These are known as 'styles' in the code and change the behavior of the model (e.g., all-grey walls, or all-nighttime lighting - see the end of the paper's appendix for examples). They are defined in the `config.py` file or using the `WINDOWZ_STYLE` env variable. The sequences below render the variations for various sequences of paramters and create the labels where required.
 
 * `rgb;labels` the default baseline model (and also render the labels).
 * `rgb;128nwall;64nwall;32nwall;16nwall;8nwall;4nwall;2nwall;1nwall;labels` changes the number of wall materials
@@ -82,10 +84,6 @@ These are known as 'styles' in the code and change the behavior of the model (e.
 *`0cen;3cen;6cen;12cen;24cen;48cen;96cen;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab;96cenlab` these are the camera positions (over a circle).
 * `1spp;2spp;4spp;8spp;16spp;32spp;64spp;128spp;256spp;512spp;nightonly;dayonly;notransmission;0cen;3cen;6cen;12cen;24cen;48cen;nosun;nobounce;fixedsun;monomat;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab` these are the rendering samples per pixel.
 * `canonical;64ms;128ms;256ms;512ms;1024ms;2048ms;labels;edges;diffuse;normals;col_per_obj;texture_rot;voronoi_chaos,phong_diffuse` these are the many varied materials experiments.
-
-# labels
-
-The labels
 
 # parameters
 
@@ -104,7 +102,13 @@ If you generate the same scene from the same random seed, it should always gener
 # code overview
 
 * `go.py` start reading here - the main loop (`for step in range (config.render_number):`) runs until all renders have completed.
-* 
+* `config.py` contains the per-setup (for me this is laptop/desktop/cluster) configuration
+* `rantom.py` contains the paramter-sampling and storage code
+* `cgb.py` my CGAShape implementation. Very different extensions and limitations to other implementations :/
+* `cgb_building.py` the main entry point for actual geometry generation. Uses CGA to create a basic building
+* `cgb_*.py` the other major components which use CGA-list constructions
+* `materials.py` this (horrible monolith) is responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
+* `shape.py1 and `subframe.py` create bezier shaped windows and then add geometry to them
 
 
 
