@@ -1,3 +1,10 @@
+# WinSyn Synthetic Procedural Model
+
+WinSyn is a research project to provide a matched pair of synthetic and real images for machine learning tasks such as segmentation. You can read the [paper](https://arxiv.org/abs/2310.08471) online.
+
+<img src='https://github.com/twak/winsyn/blob/main/winsyn.jpg' width='300'>
+
+This repository contains code for running the synthetic procedural model. We also created matching photos of [75k real windows](https://github.com/twak/winsyn_metadata).
 
 # setting up
 
@@ -5,9 +12,7 @@ We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3
 
 # resource files
 
-The [`config.py`](https://github.com/twak/winsyn/blob/main/src/config.py) file defines `resource_path` which should be the location of the resources folder.
-
-The model requires a resources files with various textures and meshes from different sources. We include a [single example](https://github.com/twak/winsyn/tree/main/resources) resource of each type - these are enough to run the model, but do not have much diversity. Running the model with only these resources will not match our results!
+The model requires a resources files with various textures and meshes from different sources. We include a [single example](https://github.com/twak/winsyn/tree/main/resources) resource of each type - these are enough to run the code, but do not have much diversity. Running the model with only these resources will not match our results... The [`config.py`](https://github.com/twak/winsyn/blob/main/src/config.py) file defines `resource_path` which should be the location of the resources folder.
 
 * The 3D clutter scenes can be downloaded from the [KAUST datastore](). They should be added added to the `exterior_clutter` folder. 
 
@@ -38,8 +43,14 @@ download_mp.py /a/location --type matterport_skybox_images
 # running headless
 
 * set the `render_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L14) to the location where renders should be written
+* set the number of renders you want in `render_number`.
 * set interactive to False in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L16).
 * set the `style` (variations) in `config.py` if you like
+* run with something like (the CUDA bit says to use an nvidia GPU to accelerate rendering):
+
+```
+blender -b /path/to/winsyn/wall.blend --python /path/to/winsyn/src/go.py -- --cycles-device CUDA
+```
 
 # running on a cluster.
 
