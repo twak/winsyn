@@ -1142,7 +1142,10 @@ class Materials:
         for name in ['exterior_junk', 'wires', 'drain_pipes', 'small_pipes', 'gutter']:
             if name in s.geom:
                 for o in s.geom[name]:
-                    o.data.materials[0] = bpy.data.materials["misc-obj"]
+                    if len(o.data.materials) == 0:
+                        o.data.materials.append(bpy.data.materials["misc-obj"])
+                    else:
+                        o.data.materials[0] = bpy.data.materials["misc-obj"]
 
         if 'exterior_floor' in s.geom:
             for o in s.geom['exterior_floor']:

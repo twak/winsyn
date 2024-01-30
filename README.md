@@ -37,18 +37,18 @@ Open the `winsyn.blend` file in Blender 3.3. Then grab a text pane in blender, o
 I deploy on our ibex/slurm cluster to render entire datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container and a job script like so. Note the fixed locations for the resources and output folders, specified in the `config.py` file. `output_dataset` is the output dataset name. On ibex I rendered on the p100 and v100 nodes.
 
 ```
-echo "Welcome to Windows"
+echo "Welcome to Windows (WinSyn Edition)"
 outdir="/ibex/wherever/you/want/output_dataset"
 mkdir -p $outdir
 
 while :
 do
-  SINGULARITYENV_WINDOWZ_STYLE="$1" singularity exec --nv --bind $outdir:/home/twak/data/dataset_out --bind /ibex/wherever/you/put/resources:/home/twak/data/panos --bind /ibex/wherever/you/put/code/:/home/twak/code/windowz  /ibex/wherever/you/put//blender_3_3.sif blender -b /ibex/wherever/you/put/windowz/winsyn.blend --python /ibex/wherever/you/put/windowz/src/go.py -- --cycles-device OPTIX
+  SINGULARITYENV_WINDOWZ_STYLE="$1" singularity exec --nv --bind $outdir:_render_path_ --bind /ibex/wherever/you/put/resources:_resource_path_ --bind /ibex/wherever/you/put/code/:_winsyn_path_  /ibex/wherever/you/put//blender_3_3.sif blender -b /ibex/wherever/you/put/winsyn/winsyn.blend --python /ibex/wherever/you/put/windowz/src/go.py -- --cycles-device OPTIX
   echo "blender crashed. let's try that again..."
 done
 ```
 
-I keep a separate `config.py` on my local machine and server with different resource locations.
+where `_render_path_`, `_resource_path_` are defined in `config.py`. I keep a separate `config.py` on my local machine and server with different resource locations.
 
 # variations
 

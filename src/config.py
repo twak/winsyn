@@ -13,7 +13,7 @@ physics = True
 resource_path = pathlib.Path(__file__).parent.parent.resolve().joinpath("resources")  # download resources as in readme.md; example format in `resource_demo` folder.
 render_path = os.path.join (expanduser("~"), "winsyn_renders")
 
-if False: # toggle this to run interactively in blender / use the headless codepath
+if True: # toggle this to run interactively in blender / use the headless codepath
     interactive=True
 else:
     render_number= 2
