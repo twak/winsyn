@@ -1,47 +1,56 @@
 
 # setting up
 
-We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3.3/). Later versions may work too.
+We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3.3/). Open the [`winsyn.blend`](https://github.com/twak/winsyn/blob/main/winsyn.blend) file in blender and run the [`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) script to run in interactive mode.
 
 # resource files
 
-The `config.py` file defines `resource_path` which should be the location of the resources folder.
+The [`config.py`](https://github.com/twak/winsyn/blob/main/src/config.py) file defines `resource_path` which should be the location of the resources folder.
 
-The model requires a resources files with various textures and meshes from different sources. We include a single example resource of each type in the XXXX folder - these are enough to run the model, but do not have much diversity. Running the model with only these resources will not match our results!
+The model requires a resources files with various textures and meshes from different sources. We include a [single example](https://github.com/twak/winsyn/tree/main/resources) resource of each type - these are enough to run the model, but do not have much diversity. Running the model with only these resources will not match our results!
 
 * The 3D clutter scenes can be downloaded from the [KAUST datastore](). They should be added added to the `exterior_clutter` folder. 
 
-* The script `util/import_google_panos.py` can be used to download the panoramas used for the published dataset. It takes a single argument: your resource folder, and downloads images here in the subfolder `outside`.
-** Alternately, download a [different set of panoramas from google directly](https://sites.google.com/view/streetlearn/dataset).
+* The script [`import_google_panos.py`](https://github.com/twak/winsyn/blob/main/import/import_google_panos.py) can be used to download the panoramas used for the published dataset. It takes a single argument: your resource folder, and downloads images here in the subfolder `outside`.
+ * Alternately, download a [different set of panoramas from google directly](https://sites.google.com/view/streetlearn/dataset).
 
-* Signs can be downloaded from the [Kaust datastore](https://repository.kaust.edu.sa/handle/10754/686575). They should be in the `signs` folder of your resource folder. The downloaded and unzipped files can be split into folders `large`, `medium`, and `small` using the script `utils/split_signs.py`.
-
-** Rename and move the signs using the script `import.signs.py`. It takes two arguments - the root folder of the unzipped signs dataset and the resource folder.
-
-* If you wish to generate the variant with many textures, download and unzip the [dtd](https://www.robots.ox.ac.uk/~vgg/data/dtd/) dataset into the `dtd` folder inside your resource folder.
+* Signs can be downloaded from the [Kaust datastore](https://repository.kaust.edu.sa/handle/10754/686575). They should be in the `signs` folder of your resource folder. The downloaded and unzipped files can be split into folders `large`, `medium`, and `small` using the script [`split_signs.py`](https://github.com/twak/winsyn/blob/main/import/import_signs.py).
+ * Rename and move the signs using the script `import.signs.py`. It takes two arguments - the root folder of the unzipped signs dataset and the resource folder.
 
 * The interior textures are from matterport. 
-** You can download them by following the instructions (involving sending them a form and getting a [download script](https://github.com/jlin816/dynalang/blob/0da77173ee4aeb975bd8a65c76ddb187fde8de81/scripts/download_mp.py#L4))
-** Run the script thusly to download all the interior panoramas:
+ * You can download them by following the instructions (involving sending them a form and getting a [download script](https://github.com/jlin816/dynalang/blob/0da77173ee4aeb975bd8a65c76ddb187fde8de81/scripts/download_mp.py#L4))
+ * Run the script thusly to download all the interior panoramas:
 ```
 download_mp.py /a/location --type matterport_skybox_images 
 ```
-** extract and convert the downloaded skyboxes into the panoramic image format using the script `util/import_matterport.py`. It takes two arguments: the root of the downloaded panoramas and your resource folder.
+ * extract and convert the downloaded skyboxes into the panoramic image format using the script [`import_matterport.py`](https://github.com/twak/winsyn/blob/main/import/import_matterport.py). It takes two arguments: the root of the downloaded panoramas and your resource folder.
+
+* If you wish to generate the variant with many textures (`texture_rot`), download and unzip the [dtd](https://www.robots.ox.ac.uk/~vgg/data/dtd/) dataset into the `dtd` folder inside your resource folder.
 
 # running from within Blender
 
-Open the `winsyn.blend` file in Blender 3.3. Then grab a text pane in blender, open the `go.py` script, and run it. Debugging requires a more challenging setup, I used something like [this](https://code.blender.org/2015/10/debugging-python-code-with-pycharm/) combined with the commented out `pydevd_pycharm.settrace` lines in `go.py`.
+* Set the `resource_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L13) to where you downloaded the resource files
+* Open the `winsyn.blend` file in Blender 3.3. 
+* Open a text pane in blender with the [`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) script
+* Run the script! Generation time varies from 20 sections to a few minutes. Blender sometimes hangs. Some generation may take a very long time depending on the parameters selected.
+* Debugging requires a more challenging setup, I use Pycharm with something like [this](https://code.blender.org/2015/10/debugging-python-code-with-pycharm/) combined with the commented out [`pydevd_pycharm.settrace`](https://github.com/twak/winsyn/blob/main/src/go.py#L66) lines in `go.py`.
 
-# running on a cluster
+# running headless
 
-I deploy on our ibex/slurm cluster to render entire datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container and a job script like so. Note the fixed locations for the resources and output folders, specified in the `config.py` file. `output_dataset` is the output dataset name. On ibex I rendered on the p100 and v100 nodes.
+* set the `render_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L14) to the location where renders should be written
+* set interactive to False in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L16).
+* set the `style` (variations) in `config.py` if you like
+
+# running on a cluster.
+
+I deploy on our [ibex](https://www.hpc.kaust.edu.sa/ibex)/slurm cluster to render large datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container and a job script similar to the below. Note the fixed locations for the resources and output folders, specified in the `config.py` file. `output_dataset` is the output dataset name. On ibex I rendered on the p100 and v100 nodes, and run about 10 machines to render 2k images overnight.
 
 ```
-echo "Welcome to Windows (WinSyn Edition)"
+echo "Welcome to Windows"
 outdir="/ibex/wherever/you/want/output_dataset"
 mkdir -p $outdir
 
-while :
+while : # "robustness"
 do
   SINGULARITYENV_WINDOWZ_STYLE="$1" singularity exec --nv --bind $outdir:_render_path_ --bind /ibex/wherever/you/put/resources:_resource_path_ --bind /ibex/wherever/you/put/code/:_winsyn_path_  /ibex/wherever/you/put//blender_3_3.sif blender -b /ibex/wherever/you/put/winsyn/winsyn.blend --python /ibex/wherever/you/put/windowz/src/go.py -- --cycles-device OPTIX
   echo "blender crashed. let's try that again..."
