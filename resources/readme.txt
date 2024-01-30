@@ -1,0 +1,1 @@
+These are the bare resources to the code. E.g., a single mesh, material etc... See the README.md file for instructions for downlaoding the whole resource set.
