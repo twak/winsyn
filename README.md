@@ -6,11 +6,11 @@ WinSyn is a research project to provide a matched pair of synthetic and real ima
 
 This repository contains code for running the synthetic procedural model. We also created matching photos of [75k real windows](https://github.com/twak/winsyn_metadata).
 
-# setting up
+### setting up
 
 We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3.3/). Open the [`winsyn.blend`](https://github.com/twak/winsyn/blob/main/winsyn.blend) file in blender and run the [`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) script to run in interactive mode.
 
-# resource files
+### resource files
 
 The model requires a resources files with various textures and meshes from different sources. We include a [single example](https://github.com/twak/winsyn/tree/main/resources) resource of each type - these are enough to run the code, but do not have much diversity. Running the model with only these resources will not match our results... The [`config.py`](https://github.com/twak/winsyn/blob/main/src/config.py) file defines `resource_path` which should be the location of the resources folder.
 
@@ -32,7 +32,7 @@ The model requires a resources files with various textures and meshes from diffe
 
 * If you wish to generate the variant with many textures (`texture_rot`), download and unzip the [dtd](https://www.robots.ox.ac.uk/~vgg/data/dtd/) dataset into the `dtd` folder inside your resource folder.
 
-# running from within Blender
+### running from within Blender
 
 * Set the `resource_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L13) to where you downloaded the resource files
 * Open the `winsyn.blend` file in Blender 3.3. 
@@ -40,7 +40,7 @@ The model requires a resources files with various textures and meshes from diffe
 * Run the script! Generation time varies from 20 sections to a few minutes. Blender hangs during generation. Some generation may take a very long time depending on the parameters selected.
 * Debugging requires a more challenging setup, I use Pycharm with something like [this](https://code.blender.org/2015/10/debugging-python-code-with-pycharm/) combined with the commented out [`pydevd_pycharm.settrace`](https://github.com/twak/winsyn/blob/main/src/go.py#L66) lines in `go.py`. The workflow goes something like - edit code in pycharm, switch to blender to run, switch back to pycharm to set breakpoints/inspect elements.
 
-# running headless
+### running headless
 
 * as well as `resource_path` as above...
 * set the `render_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L14) to the location where renders should be written
@@ -53,7 +53,7 @@ The model requires a resources files with various textures and meshes from diffe
 blender -b /path/to/winsyn/wall.blend --python /path/to/winsyn/src/go.py -- --cycles-device CUDA
 ```
 
-# running on a cluster.
+### running on a cluster
 
 I deploy on our [ibex](https://www.hpc.kaust.edu.sa/ibex)/slurm cluster to render large datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container ([singularity definition file](https://github.com/twak/winsyn/blob/main/import/Singularity.def)) and a job script similar to the below. On ibex I rendered on the p100 and v100 nodes, and run about 10 machines to render 2k images overnight.
 
@@ -72,7 +72,7 @@ done
 ```
 with `config.py` lines `render_path=/container/winsyn/output` and `resource_path=/container/winsyn/resources`.
 
-# variations
+### variations
 
 These are known as 'styles' in the code and change the behavior of the model (e.g., all-grey walls, or all-nighttime lighting - see the end of the paper's appendix for examples). They are defined in the `config.py` file or using the `WINDOWZ_STYLE` env variable. The sequences below render the variations for various sequences of paramters and create the labels where required.
 
@@ -85,7 +85,7 @@ These are known as 'styles' in the code and change the behavior of the model (e.
 * `1spp;2spp;4spp;8spp;16spp;32spp;64spp;128spp;256spp;512spp;nightonly;dayonly;notransmission;0cen;3cen;6cen;12cen;24cen;48cen;nosun;nobounce;fixedsun;monomat;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab` these are the rendering samples per pixel.
 * `canonical;64ms;128ms;256ms;512ms;1024ms;2048ms;labels;edges;diffuse;normals;col_per_obj;texture_rot;voronoi_chaos,phong_diffuse` these are the many varied materials experiments.
 
-# parameters
+### parameters
 
 The model writes out an attribute file to the `attribs` directory containing all the parameters used to generate a given scene. There are a variable number of these (sometimes thousands), and not all are human-friendly. The file also contains assorted metadata including the random seed and render times.
 
@@ -99,13 +99,13 @@ After a parameter name has been assigned (`"stucco_crack_size"`), asking for it 
 
 If you generate the same scene from the same random seed, it should always generate the same scene (on a single machine). However, small changes in the code path will change this, so consider creating a parameter list as below.
 
-# todo lists and parameter lists
+### todo lists and parameter lists
 
 There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a list of images using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One number per line. There is a robustness mechanism for multi-node rendering, but I have observed failures and had to run manulaly.
 
 In addition, if there is an existing parameter (attribs) file for that seed (i.e., the file `render_path/attribs/random_seed.txt` exists), those parameters will override the random values that would otherwise be used. Attributes that are required but not specified in this file are sampled as usual.
 
-# code overview
+### code overview
 
 * `go.py` start reading here - the main loop (`for step in range (config.render_number):`) runs until all renders have completed.
 * `config.py` contains the per-setup (for me this is laptop/desktop/cluster) configuration
