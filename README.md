@@ -55,14 +55,14 @@ blender -b /path/to/winsyn/wall.blend --python /path/to/winsyn/src/go.py -- --cy
 
 # running on a cluster.
 
-I deploy on our [ibex](https://www.hpc.kaust.edu.sa/ibex)/slurm cluster to render large datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container ([sif file]()) and a job script similar to the below. Note the fixed locations for the resources and output folders, specified in the `config.py` file. `output_dataset` is the output dataset name. On ibex I rendered on the p100 and v100 nodes, and run about 10 machines to render 2k images overnight.
+I deploy on our [ibex](https://www.hpc.kaust.edu.sa/ibex)/slurm cluster to render large datasets. I use the [nytimes](https://github.com/nytimes/rd-blender-docker?tab=readme-ov-file#331) Blender docker image built as singularity container ([singularity definition file](https://github.com/twak/winsyn/blob/main/import/Singularity.def)) and a job script similar to the below. On ibex I rendered on the p100 and v100 nodes, and run about 10 machines to render 2k images overnight.
 
 with a `run.sh` script:
 ```
 echo "Welcome to Windows"
 outdir="/ibex/wherever/you/want/output_dataset"
 mkdir -p $outdir
-style=""rgb;labels"
+style="rgb;labels"
 
 while : # "robustness"
 do
@@ -97,7 +97,13 @@ r2.uniform(0.1, 0.22, "stucco_crack_size", "Size of stucco cracks")
 
 After a parameter name has been assigned (`"stucco_crack_size"`), asking for it again in the code will return the same value (even if it lies outside of the given distribution).
 
-If you generate the same scene from the same random seed, it should always generate the same scene (on a single machine). However, small changes in the code path will change this, so it is also possible to pass in a paramter file containing all of these. Any parameters you do not list will be generated randomly as normal.
+If you generate the same scene from the same random seed, it should always generate the same scene (on a single machine). However, small changes in the code path will change this, so consider creating a parameter list as below.
+
+# todo lists and parameter lists
+
+There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a list of images using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One number per line. There is a robustness mechanism for multi-node rendering, but I have observed failures and had to run manulaly.
+
+In addition, if there is an existing parameter (attribs) file for that seed (i.e., the file `render_path/attribs/random_seed.txt` exists), those parameters will override the random values that would otherwise be used. Attributes that are required but not specified in this file are sampled as usual.
 
 # code overview
 
@@ -107,28 +113,5 @@ If you generate the same scene from the same random seed, it should always gener
 * `cgb.py` my CGAShape implementation. Very different extensions and limitations to other implementations :/
 * `cgb_building.py` the main entry point for actual geometry generation. Uses CGA to create a basic building
 * `cgb_*.py` the other major components which use CGA-list constructions
-* `materials.py` this (horrible monolith) is responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
-* `shape.py1 and `subframe.py` create bezier shaped windows and then add geometry to them
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* `materials.py` this (horrible code monolith) is responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
+* `shape.py` and `subframe.py` create bezier shaped windows and then add geometry to them
