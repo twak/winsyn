@@ -14,13 +14,12 @@ We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3
 
 The model requires a resources files with various textures and meshes from different sources. We include a [single example](https://github.com/twak/winsyn/tree/main/resources) resource of each type - these are enough to run the code, but do not have much diversity. Running the model with only these resources will not match our results... The [`config.py`](https://github.com/twak/winsyn/blob/main/src/config.py) file defines `resource_path` which should be the location of the resources folder.
 
-* The 3D clutter scenes can be downloaded from the [KAUST datastore](). They should be added added to the `exterior_clutter` folder. 
+* The 3D clutter scenes can be downloaded from the [KAUST datastore](https://doi.org/10.25781/KAUST-5E9C0). They should be added added to the `exterior_clutter` folder. 
 
 * The script [`import_google_panos.py`](https://github.com/twak/winsyn/blob/main/import/import_google_panos.py) can be used to download the panoramas used for the published dataset. It takes a single argument: your resource folder, and downloads images here in the subfolder `outside`.
   - Alternately, download a [different set of panoramas from google directly](https://sites.google.com/view/streetlearn/dataset).
 
-* Signs can be downloaded from the [Kaust datastore](https://repository.kaust.edu.sa/handle/10754/686575). They should be in the `signs` folder of your resource folder. The downloaded and unzipped files can be split into folders `large`, `medium`, and `small` using the script [`split_signs.py`](https://github.com/twak/winsyn/blob/main/import/import_signs.py).
- * Rename and move the signs using the script `import.signs.py`. It takes two arguments - the root folder of the unzipped signs dataset and the resource folder.
+* Signs can be downloaded from the [Kaust datastore](https://repository.kaust.edu.sa/handle/10754/686575). They should be in the `signs` folder of your resource folder. The downloaded and unzipped files can be split into folders `large`, `medium`, and `small` using the script [`split_signs.py`](https://github.com/twak/winsyn/blob/main/import/import_signs.py). It takes two arguments - the root folder of the unzipped signs dataset and the resource folder.
 
 * The interior textures are from matterport. 
   * You can download them by following the instructions (involving sending them a form and getting a [download script](https://github.com/jlin816/dynalang/blob/0da77173ee4aeb975bd8a65c76ddb187fde8de81/scripts/download_mp.py#L4))
@@ -45,9 +44,9 @@ The model requires a resources files with various textures and meshes from diffe
 * as well as `resource_path` as above...
 * set the `render_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L14) to the location where renders should be written
 * set the number of renders you want in `render_number`.
-* set interactive to False in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L16).
-* set the `style` (variations) in `config.py` if you like
-* run with something like (the CUDA bit says to use an nvidia GPU to accelerate rendering):
+* set `interactive` to False in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L16).
+* optional: set the `style` (variations) in `config.py`
+* run with something like (the CUDA bit says to use an Nvidia GPU to accelerate rendering):
 
 ```
 blender -b /path/to/winsyn/wall.blend --python /path/to/winsyn/src/go.py -- --cycles-device CUDA
