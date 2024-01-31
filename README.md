@@ -1,4 +1,4 @@
-# WinSyn Synthetic Procedural Model
+# WinSyn: Synthetic Procedural Model
 
 WinSyn is a research project to provide a matched pair of synthetic and real images for machine learning tasks such as segmentation. You can read the [paper](https://arxiv.org/abs/2310.08471) online.
 
