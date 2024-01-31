@@ -100,9 +100,9 @@ If you generate the same scene from the same random seed, it should always gener
 
 ### todo lists and parameter lists
 
-There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a list of images using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One number per line. There is a robustness mechanism for multi-node rendering, but I have observed failures and had to run manulaly.
+There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a list of images using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One seed (a number) per line. There is a robustness mechanism for multi-node rendering, but I have observed occasional failures and had to re-run some seeds manually.
 
-In addition, if there is an existing parameter (attribs) file for that seed (i.e., the file `render_path/attribs/random_seed.txt` exists), those parameters will override the random values that would otherwise be used. Attributes that are required but not specified in this file are sampled as usual.
+In addition, if there is an existing parameter (attribs) file for that seed (i.e., the file `render_path/attribs/random_seed.txt` exists), those parameters will override the random values that would otherwise be used. Attributes that are required but not specified in this file are sampled as usual. This can be used to manually set the parameters for a derivation. 
 
 ### code overview
 
