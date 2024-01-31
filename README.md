@@ -114,3 +114,22 @@ In addition, if there is an existing parameter (attribs) file for that seed (i.e
 * `cgb_*.py` the other major components which use CGA-list constructions
 * `materials.py` this (horrible code monolith) is responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
 * `shape.py` and `subframe.py` create bezier shaped windows and then add geometry to them
+
+### acknowledgements
+
+We thank the blender procedural artists Gabriel de Laubier for the [UCP Wood material](https://www.blendernation.com/2017/10/20/procedural-cc-0-pbr-wood-shader/) and Simon Thommes for the fantastic [Br'cks material](https://simonthommes.gumroad.com/l/Brcks). Both were modified and used in our procedural model.
+
+### citing
+
+Please site the below [paper](https://arxiv.org/abs/2310.08471) if you use our work.
+
+```
+@misc{kelly2023winsyn,
+      title={WinSyn: A High Resolution Testbed for Synthetic Data}, 
+      author={Tom Kelly and John Femiani and Peter Wonka},
+      year={2023},
+      eprint={2310.08471},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
