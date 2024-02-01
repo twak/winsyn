@@ -2,43 +2,54 @@ import random as r
 import os
 import sys
 from src import utils, cgb
+import json
+from pathlib import Path
 
-# rantom_keys = []      # used parameters in this generation
-# rantom_keys_dict = {} # used parameters in this generation
-# rantom_all = {}       # list of "all" parameters after a "big" run
+"""
+RantomCache stores the parameters. Other fns here store, load, seed the parameters and their distributions.
+"""
+
+
+def reset():
+    global RANDOM_CACHE_COUNT, ALL_CACHES, ROOT
+    RANDOM_CACHE_COUNT = 0
+    ALL_CACHES = []
+    ROOT = RantomCache(0, name="root", parent=None)
+    cgb.reset_rnd()
 
 def seed(val):
     r.seed(val)
-    global ALL_CACHES, RANDOM_CACHE_COUNT
-    ALL_CACHES=[]
-    RANDOM_CACHE_COUNT = 0
+    # global ALL_CACHES, RANDOM_CACHE_COUNT
+    # ALL_CACHES=[]
+    # RANDOM_CACHE_COUNT = 0
 
 def write_std(header="", simple=True):
     write (sys.stdout, header, simple)
 
-def write_file(path, header="", simple=True):
-    os.makedirs (os.path.dirname(path), exist_ok=True )
+def write_file(path, header=""):
+    os.makedirs (Path(path).parent, exist_ok=True )
     handle = open (path, 'w')
-    write (handle, header, simple)
+    write (handle, header)
     handle.close()
 
-def write (handle, header="", simple=True):
+def write (handle, header=""):
 
     keys = {}
-    handle.write(header + "\n{\n")
 
     for rc in ALL_CACHES:
         for k, v in rc.rantom_keys_dict.items():
             keys[f"{rc.name}/{k}"] = v
 
-            if simple:
-                handle.write(f'"{rc.name}/{k}" : {v},')
-            else:
-                e = rc.rantom_keys[k]
-                handle.write(f"{rc.name}/{k} ({e['key_desc']}, distribution: {e['dist_desc']} = {v}")
-            handle.write("\n")
+    json.dump(keys, handle, indent=2)
 
-    handle.write("}\n")
+def set_param_override(param_override):
+    global PARAM_OVERRIDE
+    PARAM_OVERRIDE = param_override
+
+def read_params(f):
+
+    with open(f, 'r') as fp:
+        return json.load(fp)
 
 def dump_all():
 
@@ -50,7 +61,6 @@ class RantomCache():
 
     def __init__(self, failure_rate = 0, name=None, parent="x") -> None:
         self.r = failure_rate
-        self.rantom_keys = {}
         self.rantom_keys_dict = {}
         global ROOT
         self.parent = ROOT if parent == "x" else parent
@@ -60,21 +70,22 @@ class RantomCache():
         RANDOM_CACHE_COUNT += 1
         ALL_CACHES.append(self)
 
+        # if we have been given parameters (from a file or the ui) patch them in here.
+        global PARAM_OVERRIDE
+        for k, v in PARAM_OVERRIDE.items():
+            if k.startswith(self.name+"/"):
+                self.rantom_keys_dict[k.replace(self.name+"/", "")] = v
+
     def lookup(self, key, key_desc, dist_desc, value, lookup=True):
 
         if key == "?":
-            print("undefined rantom variable here boss")
+            print("warning: undefined rantom variable here")
 
         if key!="?" and key in self.rantom_keys_dict: # we've seen this key before, return the same value
             return self.rantom_keys_dict[key]
         else:
             if lookup and self.parent is not None:
 
-                # pkey = "@" + key
-                # if pkey in self.rantom_keys_dict:
-                #     pc = self.rantom_keys_dict.get(pkey)
-                # else:
-                #     self.rantom_keys_dict[pkey] = pc = r.random()
                 pc = r.random() # we only store the outcome, not the process
 
                 if pc < self.r: # not failure
@@ -82,7 +93,6 @@ class RantomCache():
                 # else we fail and use the local value
 
             self.rantom_keys_dict[key] = value
-            self.rantom_keys[key] = {'key_desc': key_desc, 'dist_desc': dist_desc}
 
         return value
 
@@ -143,14 +153,12 @@ class RantomCache():
     def store(self, key, value, desc="?", lookup=True):
         key = "_" + key
         self.rantom_keys_dict[key] = value
-        self.rantom_keys[key] = {'key_desc': desc, 'dist_desc': 'manual'}
 
     def store_v(self, key, value, desc="?", lookup=True):
 
         for v, x in zip (value, ["x","y","z"]):
             k = f"_{key}_{x}"
             self.rantom_keys_dict[k] = v
-            self.rantom_keys[k] = {'key_desc': desc+"_"+x, 'dist_desc': 'manual'}
 
     def __hash__(self):
         return hash((self.name))
@@ -160,21 +168,6 @@ class RantomCache():
             return self.name == other.name
         return False
 
-
-def reset():
-    global RANDOM_CACHE_COUNT, ALL_CACHES, ROOT
-    RANDOM_CACHE_COUNT = 0
-    ALL_CACHES = []
-    ROOT = RantomCache(0, name="root", parent=None)
-    cgb.reset_rnd()
-
-RANDOM_CACHE_COUNT = 0
-ALL_CACHES = []
-ROOT = RantomCache(0, name="root", parent=None)
-
-# shortcuts for root-random..
-
-# root = RantomCache(0, "root")
 
 def random(key="?", desc="?"):
     return ROOT.random(key, desc)
@@ -211,3 +204,9 @@ def store ( key, value, desc="?" ):
 
 def store_v ( key, value, desc="?" ):
     return ROOT.store_v ( key, value, desc )
+
+
+PARAM_OVERRIDE={}
+RANDOM_CACHE_COUNT = 0
+ALL_CACHES = []
+ROOT = RantomCache(0, name="root", parent=None)

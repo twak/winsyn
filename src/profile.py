@@ -12,6 +12,11 @@ from src import shape
 
 import numbers
 
+"""
+A bunch of curve functionality
+"""
+
+
 # quadric bezier inds
 CO = 0
 HANDLE_LEFT = 1

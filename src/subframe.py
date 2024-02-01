@@ -10,6 +10,10 @@ from functools import partial
 from src import splittable as split
 from copy import copy
 
+"""
+From curves, split and extrude to create window geometry with glass panes. 
+"""
+
 def create_glass(bez, glass_w, out_glass_objs):
 
     mesh = bez.to_mesh()
@@ -67,7 +71,6 @@ class Subframe:
 
         all.pop(0) # start at 1 in names
 
-
         profiles = []
         for idx, listt in enumerate ( all ):
             a = self.r2.choice ( listt, f"subframe_{idx}", f"{idx}th subframe profile selection" )
@@ -90,9 +93,6 @@ class Subframe:
         
         self.profile_stacks = profile_stacks
 
-        # shrunkOB = prof.dumb_offset(shapeOB, 0.03)
-        # bpy.context.scene.collection.objects.link(shrunkOB)
-        # shape_wh = utils.curve_wh(geom['shapeOB'])
 
         out_frame_objs = []
         out_glass_objs = []
@@ -281,7 +281,6 @@ class Subframe:
 
         # dir is 0 (horizontal) or 1 (vertical).
         # returns 0 (not adjacent), -1, or 1 (ra can move in this direction behind rb)
-
         if ra[1-dir] == rb[1-dir] and ra[1-dir+2] == rb[1-dir+2]: # do we align horizontally?
 
             if ra[dir] + ra[dir+2] == rb[dir]:

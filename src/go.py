@@ -11,7 +11,6 @@ from datetime import datetime
 from bpy.app import handlers
 import bmesh
 
-
 dir = os.path.dirname(bpy.data.filepath)
 if not dir in sys.path:
     sys.path.append(dir)
@@ -39,7 +38,6 @@ from src import splittable as split
 from src import curtains   as curt
 
 # ones at the top are reloaded on first run(?!) lower ones need two runs to flush changes
-
 importlib.reload( pipes  )
 importlib.reload( cgb_building_junk )
 importlib.reload( cgb_building_roofs )
@@ -63,21 +61,21 @@ importlib.reload( cgb_building_walls )
 importlib.reload( shutter  )
 
 # useful incantation to allow interactive debugging in pycharm as https://code.blender.org/2015/10/debugging-python-code-with-pycharm/
-# import pydevd_pycharm
-# pydevd_pycharm.settrace('localhost', port=10912, stdoutToServer=True, stderrToServer=True)
+import pydevd_pycharm
+pydevd_pycharm.settrace('localhost', port=10912, stdoutToServer=True, stderrToServer=True)
 
 if config.interactive: # used for development/one-off renders.
 
     # hard coded seed/parameters for debugging.
-    seed = 1706642979540530925
-    # otherwise, random-by-time
-    # seed = time.time_ns()
+    #seed = 5489576
+    seed = 1706642979540530925 # a pair of bay windows
+    # otherwise, random-by-time with seed = time.time_ns()
 
-    geom, m = mat.Materials.create_geometry("rgb", seed=seed)
+    params = rantom.read_params(os.path.join (expanduser("~"), "Downloads", "params_fixed.txt"))
+    geom, m = mat.Materials.create_geometry("rgb", seed=seed, param_override=params)
     # create the default materials
     m.pre_render("rgb")
-    # alternately, create grey materials
-#    m.pre_render("labels")
+    # alternately, create grey materials with m.pre_render("diffuse")
 
     # in debug mode, dump to my Downloads folder
     rantom.write_file( os.path.join (expanduser("~"), "Downloads", "params.txt") )
@@ -91,10 +89,15 @@ else:  # batch render from console
 
     for step in range (config.render_number):
 
+        param_override = {}
+        attrib_filename = os.path.join (config.render_path, "attribs", f"{render_name}.txt" )
+
         if todo_list:
             seed, force_no_subdiv = utils.next_todo(todo_list)
+            param_override =  {} if not os.path.exists(attrib_filename) else rantom.read_params(attrib_filename)
         else:
             seed, force_no_subdiv  = time.time_ns() + config.jobid * 1e6 + step, False
+            param_override = {}
 
         if seed is None:
             print("todo list empty, ending job!")
@@ -116,7 +119,7 @@ else:  # batch render from console
         for style in styles:
 
             geom_start_time = datetime.now()
-            geom, m = mat.Materials.create_geometry(style, seed=seed, old_geom=geom, force_no_subdiv=force_no_subdiv)
+            geom, m = mat.Materials.create_geometry(style, seed=seed, old_geom=geom, force_no_subdiv=force_no_subdiv, param_override=param_override)
             rantom.store(f"geometry_generation_ms", (datetime.now() - geom_start_time).total_seconds() * 1000)
             utils.store_geometry_counts(style)
 
@@ -147,11 +150,11 @@ else:  # batch render from console
         bpy.context.view_layer.update()
         print(bpy.context.scene.statistics(bpy.context.view_layer))
 
-        rantom.write_file(f'{config.render_path}/attribs/{render_name}.txt')  # "seed=%020d\n\n" % seed
+        rantom.write_file(attrib_filename)  # "seed=%020d\n\n" % seed
 
         if todo_list:
             utils.todo_done(seed, render_name)
 
-        if os.path.exists(f'{config.render_path}stop.txt'):
+        if os.path.exists( os.path.join (config.render_path, 'stop.txt') ):
             sys.exit("quit!!")
 

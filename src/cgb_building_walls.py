@@ -162,28 +162,14 @@ def create_timber_frame(self, shapes, frame_width, frame_depth):
     for ss in adjacent.same_to_world(shapes[wall_name]).values(): # merge rectangles into big ones.
         merged_rects.extend ( adjacent.merge_rects(ss) )
 
-
-
-    # wall_name = next( iter( self.wall_names ) )
-    for ws in merged_rects: # shapes[wall_name]:
+    for ws in merged_rects:
 
         if str ( ws.__class__ ) == str ( rect ):
 
             recess_panel = extrude(-frame_depth, split_faces(frame, frame, frame, frame, panel, x))
 
-            #recess_panel = extrude(-frame_depth, split_faces(x, x, x, x, panel, x))
-            # y_splits =
-                # split_x(fw, frame_shape,
-                #     -1, if_small(1, frame_width * 4, recess_panel, split_y(fw, frame_shape, -1, recess_panel )),
-                #         )
-            # frames = recess_panel (shape=ws)
-            # if_small(0, frame_width * 4, recess_panel, split_x(fw, frame, -1, y_splits, fw, frame))))(shape=ws)
-            # if_small(0, frame_width * 4, y_splits, split_x(fw, frame_shape, -1, y_splits))))(shape=ws)
-
             frames = repeat_y ( -sy, repeat_x ( -sx, split_x(fw, frame, -1, repeat_y(-sy, split_y(fw, frame, -1, recess_panel, fw, frame)), fw, frame)))(shape=ws)
 
-            # frames = repeat_y(-sy, repeat_x(sx, split_x(fw, frame, -1,
-            #                                             repeat_y(sy, split_y(fw, frame, -1, recess_panel, fw, frame)), fw, frame)))(shape=ws)
             shapes[frame].extend(frames[frame])
             shapes[panel].extend(frames[panel])
         elif isinstance(ws, cgb.tri):
@@ -198,7 +184,6 @@ def create_timber_frame(self, shapes, frame_width, frame_depth):
 
     frame_wall = list(shapes[frame])
 
-    # for all shapes[frame] adjacent to some shape[win], remove from list of frames
     togo = set()
 
     rectfill_obj = self.curves_to_mesh(shapes["wrf"], f"timber-wall-frame-rectfill")
@@ -224,8 +209,6 @@ def create_timber_frame(self, shapes, frame_width, frame_depth):
     self.geom['exterior_wallOBs'].append([frame_obj])
 
     del shapes["wrf"]
-
-    # mydict[k_new] = mydict.pop(k_old)
 
     frame_obj.parent = self.walls_root
 

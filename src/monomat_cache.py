@@ -5,7 +5,7 @@ from src import utils
 from src.rantom import RantomCache
 
 """
-A paramater set for exploring material distributions
+A paramater set for exploring material distributions (nmat)
 """
 
 class MonoMatCache(RantomCache):

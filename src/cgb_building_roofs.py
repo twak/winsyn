@@ -218,26 +218,6 @@ def create_roof(self, shapes):
         geom_nodes = ext_obj.modifiers.new('tiles', 'NODES')
         geom_nodes.node_group = tilo
 
-    # old per-cga face code
-    # for shape in shapes["roof"]:
-    #     bm = bmesh.new()
-    #     ob = shape.to_curve().evaluated_get(self.dg)
-    #     me2 = ob.to_mesh()
-    #     bm.from_mesh(me2)
-    #     ext_mesh = bpy.data.meshes.new(f"Mesh_roof")
-    #     bm.to_mesh(ext_mesh)
-    #     ext_obj = bpy.data.objects.new(f"xxx-roof", ext_mesh)
-    #     bpy.context.scene.collection.objects.link(ext_obj)
-    #     ext_obj.parent = roof_group
-    #     self.geom['roofses'].append(ext_obj)
-    #
-    #     ext_obj.matrix_basis = shape.to_world
-    #
-    #     bm.free()
-    #
-    #     geom_nodes = ext_obj.modifiers.new('tiles', 'NODES')
-    #     geom_nodes.node_group = tilo
-
     roof_group.parent = self.walls_root
     return roof_group
 

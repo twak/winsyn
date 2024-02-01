@@ -116,16 +116,6 @@ class Adjacent():
             rem(self.yes, self.y_val, shape.y, shape)
             rem(self.yes, self.y_val, shape.y + shape.height, shape)
 
-        # for ss in self.x_val:
-        #     for s in ss:
-        #         if s == shape:
-        #             print ("oh no!")
-        #
-        # for ss in self.y_val:
-        #     for s in ss:
-        #         if s == shape:
-        #             print ("oh no!")
-
     def get (self, lit, values, position, eps=0.001):
 
         ix, iy = bisect_left(lit, position-eps), bisect_right(lit, position+eps)
@@ -144,27 +134,3 @@ class Adjacent():
         y_found = self.get(self.yes, self.y_val, shape.y ).union ( self.get(self.yes, self.y_val, shape.y + shape.height ) )
 
         return x_found.intersection (y_found)
-
-
-# class rect():
-#
-#     def __init__(self, x, y, width, height, name="foo", to_world=None) -> None:
-#         self.name = "rect"
-#
-#         self.dim = [x,y,width,height]
-#
-#         self.x = x
-#         self.y = y
-#         self.width = width
-#         self.height = height
-#         self.to_world = "to_world"
-#         self.parent = ""
-#         self.lookup = ""
-#
-#     def __str__(self):
-#         return f"[{self.x}, {self.y}, {self.width}, {self.height}]"
-#
-# rs = [rect(0,0,10,20), rect(10, 10, 10, 10) , rect(10, 0, 10, 10), rect(-20, 0, 20, 20)]
-#
-# for s in merge_rects(rs):
-#     print (s)

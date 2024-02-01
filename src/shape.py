@@ -9,7 +9,11 @@ from src import profile as prof
 from src import splittable as split
 import copy
 
-class Shape: # generates a window shape (a bezier curve) and associated metadata (window-sill, lintels, how we can split it for frames...)
+"""
+ Generates a window shape (a bezier curve) 
+"""
+
+class Shape:
     
     def __init__(self, geom):
         self.geom = geom

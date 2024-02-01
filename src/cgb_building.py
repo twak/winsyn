@@ -66,7 +66,6 @@ class CGA_Building:
         self.sign_count = 0
         self.geom["wall_signs"] = []
         self.geom['roofses'] = []
-        self.win_count = 0
         self.ext_curves = []
         self.roof_curves = []
         self.wall_names = {"w"}
@@ -92,9 +91,6 @@ class CGA_Building:
 
         utils.urban_canyon_go(self.geom)
 
-    # def wall2(self, shape=None, name=None):
-    #     return self.wall(shape = shape, name = name)
-
 
     def setup_cgb(self):
 
@@ -115,11 +111,14 @@ class CGA_Building:
         self.bwall=bwall
 
         win_r2_failure=random.uniform(0,1)
+        self.win_dict_count = 1
+
         def win_dict(shape):
 
             parent = bpy.data.objects.new(f"xxx-parent", None)
             bpy.context.scene.collection.objects.link(parent)
-            out = { "r2": rantom.RantomCache(failure_rate=win_r2_failure, parent=self.r2), "parent": parent }
+            out = { "r2": rantom.RantomCache(failure_rate=win_r2_failure, parent=self.r2, name=f"win_{self.win_dict_count}"), "parent": parent }
+            self.win_dict_count += 1
 
             if "mode" in self.geom:
                 out["mode"] = self.geom["mode"]
@@ -153,6 +152,7 @@ class CGA_Building:
         win = self.win = "win1" # front window - candidate for primary
         self.roof      = "roof"
 
+        # this is the first grammar - CGA for the whole building.
         shapes = self.run_cgb()
 
         camera = bpy.data.objects["camera"]
@@ -163,6 +163,8 @@ class CGA_Building:
             self.curves_to_mesh(shapes["debug"], f"xxx-debug")
 
         primary_win = None
+        self.win_count = 0
+
         if len (shapes[win]) > 0:
             primary_win = p = rantom.choice(shapes[win], "p_win", "which window is the primary?" )
             pv = p.world_verts()
@@ -227,6 +229,7 @@ class CGA_Building:
                         iwt = self.int_wall_thickness
                         ewt = self.ext_wall_thickness
 
+                    # this is the second grammar to create each window
                     for k, v in self.create_win(
                             name=name,
                             shape=shape,
@@ -238,6 +241,8 @@ class CGA_Building:
                             int_wall_thickness=iwt,
                             camera=camera).items():
                         shapes[k].extend(v)
+
+                    self.win_count += 1
 
         else: # something went wrong...no windows?
             print("didn't find a window to look at :(")
@@ -276,7 +281,6 @@ class CGA_Building:
             self.create_ground( shapes ) # camera intersects ground in orthomode if looking down.
 
         pipes.max_subdivide(shapes, self, include_others = False)
-
         self.merge_walls( shapes, self.timber_framed )
 
         if self.timber_framed:
@@ -323,16 +327,6 @@ class CGA_Building:
             print("starting physics")
 
     def run_cgb( self ):
-
-        # d = rantom.uniform(0.5, 2, "foo")
-        # e = rantom.uniform(0.5, 2, "foo1")
-        # f = rantom.uniform(0.5, 2, "foo2")
-        # g = rantom.uniform(0.5, 2, "foo3")
-        #
-        # faces =  split_faces(
-        #     repeat_x (-g, "w", 1,
-        #               repeat_y( -d,
-        #                         split_y(e, "w", -f, "none"), -d, "w" ), -g, "w" ), "w", "none" )  (shape=cuboid((-5,-5, 0, 3, 3, 6)) )
 
         ib = "interior_box"
         x = self.x
@@ -390,7 +384,6 @@ class CGA_Building:
             0.3, repeat_x( u(-2,-1), self.bxwall(), u(-2,-1), split_y(u(2, facade_height), wings, -1, self.bxwall()), u(-2,-1), self.bxwall()) ,
             0.7, self.bxwall() )
 
-        # building = split_faces(wall,  wall,  wall, wall, x)
         building = split_faces(fac,  outcrop,  outcrop, self.bxwall(name="back_wall"), x)
 
         exterior = split_faces(x,x,x,x,x, self.ground ) # floor around builing
@@ -426,7 +419,6 @@ class CGA_Building:
                     clw = jwi @ cl
                     hits = 0
                     for pt in primary_win.world_verts() + [primary_win.world_center()]:
-#[Vector((-1.0463764667510986, -1.9372276067733765, 0.8622647523880005)), Vector((-0.5758798122406006, -1.9372276067733765, 0.8622647523880005)), Vector((-0.5758798122406006, -1.9372276067733765, 1.7305623292922974)), Vector((-1.0463764667510986, -1.9372276067733765, 1.7305623292922974)), Vector((-0.8111281394958496, -1.9372276067733765, 1.296413540840149))]
                         result, location, normal, index = j.ray_cast(clw, jwi @ pt - clw, distance=30, depsgraph=dg )
                         if result:
                             hits += 1
@@ -483,7 +475,7 @@ class CGA_Building:
             if len ( mesh.modifiers ) > 0: #  geometry nodes (?!)
                 m2 = mesh.evaluated_get(dg)
                 mesh = bpy.data.meshes.new_from_object(m2, depsgraph=dg)
-            elif mesh.__class__ == bpy.types.Object: # i said mesh!
+            elif mesh.__class__ == bpy.types.Object:
                 mesh = mesh.data
             bm.from_mesh(mesh)
 

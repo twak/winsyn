@@ -5,6 +5,10 @@ from src import rantom
 from src import profile as prof
 from functools import partial
 
+"""
+A splittable splits a curve, e.g., create window pane shapes from an outer window. There are different 
+classes for different shaped windows. Each Shape will usually have a Splittable method assigned.
+"""
 
 class Splittable:
 

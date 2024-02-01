@@ -13,6 +13,10 @@ from . import monomat_cache as mm
 import numpy as np
 from mathutils import Vector, Matrix, Euler
 
+"""
+Adds most of the materials to geometry and does styles.
+"""
+
 def copy(material):
     out = material.copy()
     out.name = 'xxx-'+material.name
@@ -31,12 +35,16 @@ class Materials:
         bpy.context.scene.cycles.samples = config.samples
         bpy.context.scene.cycles.time_limit = 0
         bpy.data.worlds["World"].node_tree.nodes["fullbright"].inputs[0].default_value = 0
+        bpy.data.worlds["World"].node_tree.nodes["simple_lighting"].inputs[0].default_value = 0
+        bpy.data.worlds["World"].node_tree.nodes["Background"].inputs[1].default_value = 0
         bpy.context.scene.cycles.use_preview_denoising = True
         bpy.context.scene.cycles.use_denoising = True
         bpy.context.scene.view_settings.view_transform = 'Filmic' # blender default
         bpy.context.scene.camera = bpy.data.objects['camera']
         bpy.context.scene.render.use_freestyle = False
         bpy.context.scene.render.film_transparent = False
+        bpy.data.objects["Sun"].hide_render = False
+        bpy.data.objects["Sun"].hide_set(False)
 
         # env maps, lights, camera
         s.env()
@@ -58,16 +66,15 @@ class Materials:
             wr2 = override_r if override_r else rantom.RantomCache(0.1, name=f"wall_material_{idx}")
 
             if "timber" in walls[0].name:
-                if  wall_is_texture:
-                    if hasattr(s.geom, "wall_is_texture"): # don't use procedurals
-                        timber_frame_mat = s.got_wall(wr2, "timber_frame")
-                    elif wr2.weighted_int([2,1], "timber_frame_material") == 0: # kinda black-ish
-                        c = wr2.uniform(0.01, 0.1, "timber_frame_color")
-                        timber_frame_mat = s.got_stucco("timber_frame", wr2, color=(c,c,c,1))
-                        mode = 0
-                    else: # metal
-                        timber_frame_mat = s.got_metal(wr2)
-                        mode = 1
+                mode = 0
+                if hasattr(s.geom, "wall_is_texture"): # don't use procedurals
+                    timber_frame_mat = s.got_wall(wr2, "timber_frame")
+                elif wr2.weighted_int([2,1], "timber_frame_material") == 0: # kinda black-ish
+                    c = wr2.uniform(0.01, 0.1, "timber_frame_color")
+                    timber_frame_mat = s.got_stucco("timber_frame", wr2, color=(c,c,c,1))
+                else: # metal
+                    timber_frame_mat = s.got_metal(wr2)
+                    mode = 1
 
                 ex_wall_shader = timber_frame_mat
                 use_subdiv = False
@@ -85,7 +92,7 @@ class Materials:
                 if len ( wall.data.vertices ) == 0:
                     continue
 
-                if wall_is_texture: # do uv-remapping here...
+                if wall_is_texture: # do uv-remapping for many-textures...
                     bpy.context.view_layer.objects.active = wall
                     bpy.ops.object.mode_set(mode="EDIT")
                     bpy.ops.mesh.select_all(action="SELECT")
@@ -325,8 +332,13 @@ class Materials:
             filepath = os.path.join(config.resource_path, "wall_materials", "walls.blend")
             n = s.geom["wall_is_texture"]
 
+            count = 0
+            with bpy.data.libraries.load(filepath, link=False) as (data_from, data_to):
+                for o in data_from.objects:
+                    if str(o).startswith("Cube."):
+                        count += 1
 
-            x = [y for y in range(128)]
+            x = [y for y in range(count)]
             random.Random(911).shuffle(x)
             x = x[:n]
 
@@ -370,7 +382,7 @@ class Materials:
 
     def env(self, force=False, is_really_night=None):
 
-        is_night = False # rantom.weighted_int( [19,1],"is_night" ) == 1
+        is_night = rantom.weighted_int( [19,1],"is_night" ) == 1
         key = ""
 
         if force:
@@ -412,7 +424,7 @@ class Materials:
         rantom.store("sun_size", sun.data.angle)
 
         # outside texture
-        environments = glob(f'{config.resource_path}/outside/*.jpg')
+        environments = sorted ( glob(f'{config.resource_path}/outside/*.jpg') )
         env_image = bpy.data.images.load(rantom.choice(environments, "ext_skybox", "Exterior environment texture map"))
         env_image.name = "xxx_" + env_image.name
         bpy.data.worlds["World"].node_tree.nodes["Environment Texture"].image = env_image
@@ -437,7 +449,7 @@ class Materials:
         # inside texture
         mat = copy ( bpy.data.materials["interior_pano_shader"] )
 
-        internals = glob(f'{config.resource_path}/inside/*.jpg')
+        internals = sorted ( glob(f'{config.resource_path}/inside/*.jpg') )
         internal_image = bpy.data.images.load(
             rantom.choice(internals, "interior_skybox", "Interior panorama background image"))
         internal_image.name = "xxx_" + internal_image.name
@@ -1087,6 +1099,8 @@ class Materials:
                         set(things, node_name)
 
         for obj in a:
+            if len(obj.data.materials) == 0:
+                obj.data.materials.append (f(s, obj))
             for i in range (len(obj.data.materials)):
                 obj.data.materials[i] = f(s, obj)
 
@@ -1257,11 +1271,14 @@ class Materials:
         # lit by emission
         if on:
             bpy.data.objects["Sun"].hide_render = True
+            bpy.data.objects["Sun"].hide_set(True)
+
             bpy.data.worlds["World"].node_tree.nodes["simple_lighting"].inputs[0].default_value = 1
             bpy.context.scene.view_settings.view_transform = 'Raw'
             # bpy.context.scene.render.film_transparent = True
         else:
             bpy.data.objects["Sun"].hide_render = False
+            bpy.data.objects["Sun"].hide_set(False)
             bpy.data.worlds["World"].node_tree.nodes["simple_lighting"].inputs[0].default_value = 0
             bpy.context.scene.view_settings.view_transform = 'Filmic'
             # bpy.context.scene.render.film_transparent = False
@@ -1269,7 +1286,7 @@ class Materials:
     def set_texture_rot(s):
 
         if s.dtd_textures is None:
-            s.dtd_textures = glob(f'{config.resource_path}/dtd/*.jpg')
+            s.dtd_textures = sorted ( glob(f'{config.resource_path}/dtd/*.jpg') )
 
         def get(s, obj):
             mat = bpy.data.materials["texture_rot"].copy()
@@ -1454,7 +1471,7 @@ class Materials:
 
 
 
-    def create_geometry(style, seed, old_geom=None, force_no_subdiv=False):
+    def create_geometry(style, seed, old_geom=None, force_no_subdiv=False, param_override={}):
 
         print (f"creating geometry with seed {int(seed)}")
 
@@ -1463,6 +1480,7 @@ class Materials:
             geom = utils.cleanup_last_scene()
             geom["force_no_subdiv"] = force_no_subdiv
 
+            rantom.set_param_override(param_override)
             rantom.reset()
             rantom.store("seed", seed)
             rantom.seed(seed)
@@ -1473,12 +1491,10 @@ class Materials:
 
         elif style in ["nosplitz","mono_profile","only_rectangles","no_rectangles","only_squares","single_window","wide_windows"]:
 
-            if seed is not None:
-                rantom.seed(seed)
-
             geom = utils.cleanup_last_scene(geom=old_geom)
             geom["force_no_subdiv"] = force_no_subdiv
 
+            rantom.set_param_override(param_override)
             rantom.reset() # reset all - will remove timings, etc...
             rantom.store("seed", seed)
             rantom.seed(seed)
@@ -1493,11 +1509,10 @@ class Materials:
 
             geom = utils.cleanup_last_scene()
             geom["force_no_subdiv"] = force_no_subdiv
-
+            rantom.set_param_override(param_override)
             rantom.reset()
             rantom.store("seed", seed)
             rantom.seed(seed)
-
             geom["lvl"] = 9
             cgb_building.CGA_Building(geom).go()
 
@@ -1505,11 +1520,10 @@ class Materials:
             return geom, materials
 
         else: # assume geometry already exists
+
             geom = old_geom
             geom["force_no_subdiv"] = force_no_subdiv
-
             materials = geom["materials"]
-
             return geom, materials
 
 

@@ -7,6 +7,10 @@ from src import profile as prof
 from src import shape
 # from .profile import Profile
 
+"""
+Things that surround windows: sills, frames, lintels...
+"""
+
 class Surround:
 
     def __init__(self, geom, glass_pos):

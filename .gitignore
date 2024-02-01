@@ -1,4 +1,6 @@
 /winsyn.blend1
 /src/__pycache__
 /src/old/__pycache__
+__pycache__/
 /.idea/
+*.blend1

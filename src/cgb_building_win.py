@@ -431,9 +431,12 @@ def create_win(self, name="win_anon", shape=None, primary=False, do_surround=Tru
     has_shutters = shape.get_value("has_shutters") != None
 
     if win_rand is not None:
-        win_rand.name = name # hack to label primary, nsew... windows
+        pass
+        # win_rand.name = name # hack to label primary, nsew... windows. don't change names of randomcaches - it messes up parameters.
     else:
         win_rand = rantom.RantomCache(failure_rate=0.3, parent=self.r2, name=name)
+
+    win_rand.store("name", name, "name of dictionary")
 
     window_type = win_rand.weighted_int([1, 1, 80], "generate_frame", "do we have a frame and glass?")
     has_bars = win_rand.weighted_int([0 if has_blind or has_shutters else 1,5], "bars_on_window", lookup=False) == 0
@@ -608,8 +611,6 @@ def create_win(self, name="win_anon", shape=None, primary=False, do_surround=Tru
         for o in wdict['surroundOBs']:
             o.matrix_basis = shape.to_world
             o.parent = win_group
-
-    self.win_count += 1
 
     return {"window": [shape], "wrf": [rf]}
 
