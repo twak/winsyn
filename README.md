@@ -49,7 +49,7 @@ The model requires a resources files with various textures and meshes from diffe
 * run with something like (the CUDA bit says to use an Nvidia GPU to accelerate rendering):
 
 ```
-blender -b /path/to/winsyn/wall.blend --python /path/to/winsyn/src/go.py -- --cycles-device CUDA
+blender -b /path/to/winsyn/winsyn.blend --python /path/to/winsyn/src/go.py -- --cycles-device CUDA
 ```
 
 ### running on a cluster
