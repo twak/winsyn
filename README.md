@@ -86,25 +86,25 @@ These are known as 'styles' in the code and change the behavior of the model (e.
 
 ### parameters
 
-The model writes out an attribute file to the `attribs` directory containing all the parameters used to generate a given scene. There are a variable number of these (sometimes thousands), and not all are human-friendly. The file also contains assorted metadata including the random seed and render times.
-
-You can vary the model's output by changing the parameters. By default a random seed is created and used to generate the remainder of the parameters. There is no complete description of the paramters, but the code samples them from the `RantomCache` class in `rantom.py`:
+There are a variable number of parameters (sometimes thousands) depending on the code-path, and not all have human-friendly names. The parameters are described in the code samples which samples them from the `RantomCache` class in `rantom.py`:
 
 ```
 r2.uniform(0.1, 0.22, "stucco_crack_size", "Size of stucco cracks")
 ```
 
-After a parameter name has been assigned (`"stucco_crack_size"`), asking for it again in the code will return the same value (even if it lies outside of the given distribution).
+The model writes out an attribute file to the `attribs` directory containing all the parameters used to generate a given scene. The file also contains assorted metadata including the random seed and render times. You can vary the model's output by changing the parameters. By default a random seed is created and used to generate the remainder of the parameters.
 
-If you generate the same scene from the same random seed, it should always generate the same scene (on a single machine). However, small changes in the code path will change this, so consider creating a parameter list as below.
+After a parameter name has been assigned (`"stucco_crack_size"`), asking for it again in the code will return the same value (even if it lies outside of the given distribution - invalid ranges ).
+
+If you generate using the same random seed, it should always generate the same scene. However, changes in the code will change this, so consider creating a parameter list as below.
 
 ### todo lists and parameter lists
 
-There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a list of images using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One seed (a number) per line. There is a robustness mechanism for multi-node rendering, but I have observed occasional failures and had to re-run some seeds manually.
+There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a dataset using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One seed (a number) per line. There is a robustness mechanism for multi-node rendering, but I have observed occasional failures and had to re-run some seeds manually.
 
 In addition, if there is an existing parameter (attribs) file for that seed (i.e., the file `render_path/attribs/random_seed.txt` exists), those parameters will override the random values that would otherwise be used. Attributes that are required but not specified in this file are sampled as usual. This can be used to manually set the parameters for a derivation. 
 
-### code overview
+### code outline
 
 * `go.py` start reading here - the main loop (`for step in range (config.render_number):`) runs until all renders have completed.
 * `config.py` contains the per-setup (for me this is laptop/desktop/cluster) configuration
@@ -112,7 +112,7 @@ In addition, if there is an existing parameter (attribs) file for that seed (i.e
 * `cgb.py` my CGAShape implementation. Very different extensions and limitations to other implementations :/
 * `cgb_building.py` the main entry point for actual geometry generation. Uses CGA to create a basic building
 * `cgb_*.py` the other major components which use CGA-list constructions
-* `materials.py` this (horrible code monolith) is responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
+* `materials.py` responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
 * `shape.py` and `subframe.py` create bezier shaped windows and then add geometry to them
 
 ### acknowledgements
