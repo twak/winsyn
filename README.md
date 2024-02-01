@@ -80,7 +80,7 @@ These are known as 'styles' in the code and change the behavior of the model (e.
 *  `0monomat;0.33monomat;0.66monomat;1monomat;2monomat;4monomat;0multimat;0.33multimat;0.66multimat;1multimat;2multimat;4multimat;labels;all_brick` changes the parameterization of the procedural materials. monomat is a single proc material for each object class. multi-mat is the baseline number of materials. The numbers are multipliers on the deviations for parameter generation.
 *  `nosplitz;nosplitz_labels;mono_profile;mono_profile_labels;only_rectangles;only_rectangles_labels;no_rectangles;no_rectangles_labels;only_squares;only_squares_labels;single_window;single_windows_labels;wide_windows;wide_windows_labels` the window-shape parameterization variation.
 * `lvl9;lvl8;lvl7;lvl6;lvl5;lvl4;lvl3;lvl2;lvl1;lvl9_labels;lvl8_labels;lvl7_labels;lvl6_labels;lvl5_labels;lvl4_labels;lvl3_labels;lvl2_labels;lvl1_labels` these are the number of modeled labels (i.e., just starting will the `wall` label with `lvl1`.
-*`0cen;3cen;6cen;12cen;24cen;48cen;96cen;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab;96cenlab` these are the camera positions (over a circle).
+* `0cen;3cen;6cen;12cen;24cen;48cen;96cen;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab;96cenlab` these are the camera positions (over a circle).
 * `1spp;2spp;4spp;8spp;16spp;32spp;64spp;128spp;256spp;512spp;nightonly;dayonly;notransmission;0cen;3cen;6cen;12cen;24cen;48cen;nosun;nobounce;fixedsun;monomat;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab` these are the rendering samples per pixel.
 * `canonical;64ms;128ms;256ms;512ms;1024ms;2048ms;labels;edges;diffuse;normals;col_per_obj;texture_rot;voronoi_chaos,phong_diffuse` these are the many varied materials experiments.
 
