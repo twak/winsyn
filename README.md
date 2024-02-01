@@ -1,4 +1,4 @@
-# WinSyn Synthetic Procedural Model
+# WinSyn: Synthetic Procedural Model
 
 WinSyn is a research project to provide a matched pair of synthetic and real images for machine learning tasks such as segmentation. You can read the [paper](https://arxiv.org/abs/2310.08471) online.
 
@@ -49,7 +49,7 @@ The model requires a resources files with various textures and meshes from diffe
 * run with something like (the CUDA bit says to use an Nvidia GPU to accelerate rendering):
 
 ```
-blender -b /path/to/winsyn/wall.blend --python /path/to/winsyn/src/go.py -- --cycles-device CUDA
+blender -b /path/to/winsyn/winsyn.blend --python /path/to/winsyn/src/go.py -- --cycles-device CUDA
 ```
 
 ### running on a cluster
@@ -80,31 +80,31 @@ These are known as 'styles' in the code and change the behavior of the model (e.
 *  `0monomat;0.33monomat;0.66monomat;1monomat;2monomat;4monomat;0multimat;0.33multimat;0.66multimat;1multimat;2multimat;4multimat;labels;all_brick` changes the parameterization of the procedural materials. monomat is a single proc material for each object class. multi-mat is the baseline number of materials. The numbers are multipliers on the deviations for parameter generation.
 *  `nosplitz;nosplitz_labels;mono_profile;mono_profile_labels;only_rectangles;only_rectangles_labels;no_rectangles;no_rectangles_labels;only_squares;only_squares_labels;single_window;single_windows_labels;wide_windows;wide_windows_labels` the window-shape parameterization variation.
 * `lvl9;lvl8;lvl7;lvl6;lvl5;lvl4;lvl3;lvl2;lvl1;lvl9_labels;lvl8_labels;lvl7_labels;lvl6_labels;lvl5_labels;lvl4_labels;lvl3_labels;lvl2_labels;lvl1_labels` these are the number of modeled labels (i.e., just starting will the `wall` label with `lvl1`.
-*`0cen;3cen;6cen;12cen;24cen;48cen;96cen;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab;96cenlab` these are the camera positions (over a circle).
+* `0cen;3cen;6cen;12cen;24cen;48cen;96cen;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab;96cenlab` these are the camera positions (over a circle).
 * `1spp;2spp;4spp;8spp;16spp;32spp;64spp;128spp;256spp;512spp;nightonly;dayonly;notransmission;0cen;3cen;6cen;12cen;24cen;48cen;nosun;nobounce;fixedsun;monomat;labels;0cenlab;3cenlab;6cenlab;12cenlab;24cenlab;48cenlab` these are the rendering samples per pixel.
 * `canonical;64ms;128ms;256ms;512ms;1024ms;2048ms;labels;edges;diffuse;normals;col_per_obj;texture_rot;voronoi_chaos,phong_diffuse` these are the many varied materials experiments.
 
 ### parameters
 
-The model writes out an attribute file to the `attribs` directory containing all the parameters used to generate a given scene. There are a variable number of these (sometimes thousands), and not all are human-friendly. The file also contains assorted metadata including the random seed and render times.
-
-You can vary the model's output by changing the parameters. By default a random seed is created and used to generate the remainder of the parameters. There is no complete description of the paramters, but the code samples them from the `RantomCache` class in `rantom.py`:
+There are a variable number of parameters (sometimes thousands) depending on the code-path, and not all have human-friendly names. The parameters are described in the code samples which samples them from the `RantomCache` class in `rantom.py`:
 
 ```
 r2.uniform(0.1, 0.22, "stucco_crack_size", "Size of stucco cracks")
 ```
 
-After a parameter name has been assigned (`"stucco_crack_size"`), asking for it again in the code will return the same value (even if it lies outside of the given distribution).
+The model writes out an attribute file to the `attribs` directory containing all the parameters used to generate a given scene. The file also contains assorted metadata including the random seed and render times. You can vary the model's output by changing the parameters. By default a random seed is created and used to generate the remainder of the parameters.
 
-If you generate the same scene from the same random seed, it should always generate the same scene (on a single machine). However, small changes in the code path will change this, so consider creating a parameter list as below.
+After a parameter name has been assigned (`"stucco_crack_size"`), asking for it again in the code will return the same value (even if it lies outside of the given distribution - invalid ranges ).
+
+If you generate using the same random seed, it should always generate the same scene. However, changes in the code will change this, so consider creating a parameter list as below.
 
 ### todo lists and parameter lists
 
-There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a list of images using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One seed (a number) per line. There is a robustness mechanism for multi-node rendering, but I have observed occasional failures and had to re-run some seeds manually.
+There is a [mechanism](https://github.com/twak/winsyn/blob/main/src/go.py#L90) to render a dataset using fixed seeds/parameters in headless/non-interactive mode. If there is a `todo.txt` file in the `config.render_path`, the system will try to render for each random seed (e.g., a number) in the file. One seed (a number) per line. There is a robustness mechanism for multi-node rendering, but I have observed occasional failures and had to re-run some seeds manually.
 
 In addition, if there is an existing parameter (attribs) file for that seed (i.e., the file `render_path/attribs/random_seed.txt` exists), those parameters will override the random values that would otherwise be used. Attributes that are required but not specified in this file are sampled as usual. This can be used to manually set the parameters for a derivation. 
 
-### code overview
+### code outline
 
 * `go.py` start reading here - the main loop (`for step in range (config.render_number):`) runs until all renders have completed.
 * `config.py` contains the per-setup (for me this is laptop/desktop/cluster) configuration
@@ -112,5 +112,24 @@ In addition, if there is an existing parameter (attribs) file for that seed (i.e
 * `cgb.py` my CGAShape implementation. Very different extensions and limitations to other implementations :/
 * `cgb_building.py` the main entry point for actual geometry generation. Uses CGA to create a basic building
 * `cgb_*.py` the other major components which use CGA-list constructions
-* `materials.py` this (horrible code monolith) is responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
+* `materials.py` responsible for adding materials to the scene's geometry, as well as all variations. `pre_render` and `post_render` are the most interesting, with `go` as the entrypoint for the main texturing routine.
 * `shape.py` and `subframe.py` create bezier shaped windows and then add geometry to them
+
+### acknowledgements
+
+We thank the blender procedural artists Gabriel de Laubier for the [UCP Wood material](https://www.blendernation.com/2017/10/20/procedural-cc-0-pbr-wood-shader/) and Simon Thommes for the fantastic [Br'cks material](https://simonthommes.gumroad.com/l/Brcks). Both were modified and used in our procedural model.
+
+### citing
+
+Please site the below [paper](https://arxiv.org/abs/2310.08471) if you use our work.
+
+```
+@misc{kelly2023winsyn,
+      title={WinSyn: A High Resolution Testbed for Synthetic Data}, 
+      author={Tom Kelly and John Femiani and Peter Wonka},
+      year={2023},
+      eprint={2310.08471},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV}
+}
+```
