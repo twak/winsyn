@@ -61,24 +61,26 @@ importlib.reload( cgb_building_walls )
 importlib.reload( shutter  )
 
 # useful incantation to allow interactive debugging in pycharm as https://code.blender.org/2015/10/debugging-python-code-with-pycharm/
-import pydevd_pycharm
-pydevd_pycharm.settrace('localhost', port=10912, stdoutToServer=True, stderrToServer=True)
+# import pydevd_pycharm
+# pydevd_pycharm.settrace('localhost', port=10912, stdoutToServer=True, stderrToServer=True)
 
 if config.interactive: # used for development/one-off renders.
 
     # hard coded seed/parameters for debugging.
-    #seed = 5489576
     seed = 1706642979540530925 # a pair of bay windows
     # otherwise, random-by-time with seed = time.time_ns()
+    params = {}
 
-    params = rantom.read_params(os.path.join (expanduser("~"), "Downloads", "params_fixed.txt"))
+    # read parameters from disk
+    # params = rantom.read_params(os.path.join (expanduser("~"), "Downloads", "params_fixed.txt"))
+
     geom, m = mat.Materials.create_geometry("rgb", seed=seed, param_override=params)
     # create the default materials
     m.pre_render("rgb")
     # alternately, create grey materials with m.pre_render("diffuse")
 
-    # in debug mode, dump to my Downloads folder
-    rantom.write_file( os.path.join (expanduser("~"), "Downloads", "params.txt") )
+    # write parameters to disk
+    # rantom.write_file( os.path.join (expanduser("~"), "Downloads", "params.txt") )
 
 else:  # batch render from console
 

@@ -92,13 +92,13 @@ class Materials:
                 if len ( wall.data.vertices ) == 0:
                     continue
 
-                if wall_is_texture: # do uv-remapping for many-textures...
-                    bpy.context.view_layer.objects.active = wall
-                    bpy.ops.object.mode_set(mode="EDIT")
-                    bpy.ops.mesh.select_all(action="SELECT")
-                    # bpy.ops.object.material_slot_select()
-                    bpy.ops.uv.cube_project(cube_size=1, correct_aspect=False)
-                    bpy.ops.object.mode_set(mode="OBJECT")
+                # if wall_is_texture: # do uv-remapping for many-textures...
+                bpy.context.view_layer.objects.active = wall
+                bpy.ops.object.mode_set(mode="EDIT")
+                bpy.ops.mesh.select_all(action="SELECT")
+                # bpy.ops.object.material_slot_select()
+                bpy.ops.uv.cube_project(cube_size=1, correct_aspect=False)
+                bpy.ops.object.mode_set(mode="OBJECT")
 
                 sa (wall, ex_wall_shader ) # wall.data.materials.append( ex_wall_shader )
 
