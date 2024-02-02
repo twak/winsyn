@@ -8,34 +8,33 @@ This repository contains code for running the synthetic procedural model. We als
 
 ### setting up
 
-We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3.3/). Open the [`winsyn.blend`](https://github.com/twak/winsyn/blob/main/winsyn.blend) file in blender and run the [`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) script to run in interactive mode.
+We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3.3/). Below we introduct options to run from a gui (a blender add-on; [`gui.py`](https://github.com/twak/winsyn/blob/main/src/gui.py) ), python script withing blender ([`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) ), headless, & on a cluster.
 
-### resource files
+### run from Blender add-on
 
-The model requires a resources files with various textures and meshes from different sources. We include a [single example](https://github.com/twak/winsyn/tree/main/resources) resource of each type - these are enough to run the code, but do not have much diversity. Running the model with only these resources will not match our results... The [`config.py`](https://github.com/twak/winsyn/blob/main/src/config.py) file defines `resource_path` which should be the location of the resources folder.
+<img src='https://github.com/twak/winsyn/blob/main/gui.jpg?raw=true' width='200'>
 
-* The 3D clutter scenes can be downloaded from the [KAUST datastore](https://doi.org/10.25781/KAUST-5E9C0). They should be added added to the `exterior_clutter` folder. 
+* Open Blender 3.3. 
+* add [`gui.py`](https://github.com/twak/winsyn/blob/main/src/gui.py) as an add-on:
+  * Edit > Preferences > Add-ons > install... then select [`gui.py`](https://github.com/twak/winsyn/blob/main/src/gui.py).
+  * Enable the WinSyn addon: ensure "community" is highlighted (blue) and search for "WinSyn". Click the checkbox next to "Research: WinSyn". Close the preferences window.
+  * The WinSyn tab should now be visible at the top-right of the 3D area. You may have to press the `n` key with your mouse over the 3D view to show the options (below the item and tool tabs).
+  * You should now see the interface as above.
+* You have the options to
+  * Generate from a seed. Each different seed creates a different window.
+  * Generate from a file. The parameters from the file will be read to generate a building.
+  * Specify a parameter file.
+  * Edit the parameter file - edit and save (alt-s) the parameters in json format. Requires a text-editor pane be open (shift-f11).
+  * Set the resource path. By default this is the stripped down resource set in this repository, see below for instructions on how to download the full resource set.
+  * Set the styles/variation. These are used in the paper to explore different graphics techniques.
+  * Run the slow physics simulator or not
+  * The "generate" button will create your scene & write out the parameters to the given location
+    
+### running code from within Blender
 
-* The script [`import_google_panos.py`](https://github.com/twak/winsyn/blob/main/import/import_google_panos.py) can be used to download the panoramas used for the published dataset. It takes a single argument: your resource folder, and downloads images here in the subfolder `outside`.
-  - Alternately, download a [different set of panoramas from google directly](https://sites.google.com/view/streetlearn/dataset).
-
-* Signs can be downloaded from the [Kaust datastore](https://repository.kaust.edu.sa/handle/10754/686575). They should be in the `signs` folder of your resource folder. The downloaded and unzipped files can be split into folders `large`, `medium`, and `small` using the script [`split_signs.py`](https://github.com/twak/winsyn/blob/main/import/import_signs.py). It takes two arguments - the root folder of the unzipped signs dataset and the resource folder.
-
-* The interior textures are from matterport. 
-  * You can download them by following the instructions (involving sending them a form and getting a [download script](https://github.com/jlin816/dynalang/blob/0da77173ee4aeb975bd8a65c76ddb187fde8de81/scripts/download_mp.py#L4))
-  * Run the script thusly to download all the interior panoramas:
-  ```
-  download_mp.py /a/location --type matterport_skybox_images 
-  ```
- * extract and convert the downloaded skyboxes into the panoramic image format using the script [`import_matterport.py`](https://github.com/twak/winsyn/blob/main/import/import_matterport.py). It takes two arguments: the root of the downloaded panoramas and your resource folder.
-
-* If you wish to generate the variant with many textures (`texture_rot`), download and unzip the [dtd](https://www.robots.ox.ac.uk/~vgg/data/dtd/) dataset into the `dtd` folder inside your resource folder.
-
-### running from within Blender
-
-* Set the `resource_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L13) to where you downloaded the resource files
-* Open the `winsyn.blend` file in Blender 3.3. 
+* Open the [`winsyn.blend`](https://github.com/twak/winsyn/blob/main/winsyn.blend) file in Blender 3.3. 
 * Open a text pane in blender with the [`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) script
+* Optional: Set the `resource_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L13) to where you downloaded the resource files (see below)
 * Run the script! Generation time varies from 20 sections to a few minutes. Blender hangs during generation. Some generation may take a very long time depending on the parameters selected.
 * Debugging requires a more challenging setup, I use Pycharm with something like [this](https://code.blender.org/2015/10/debugging-python-code-with-pycharm/) combined with the commented out [`pydevd_pycharm.settrace`](https://github.com/twak/winsyn/blob/main/src/go.py#L66) lines in `go.py`. The workflow goes something like - edit code in pycharm, switch to blender to run, switch back to pycharm to set breakpoints/inspect elements.
 
@@ -70,6 +69,28 @@ do
 done
 ```
 with `config.py` lines `render_path=/container/winsyn/output` and `resource_path=/container/winsyn/resources`.
+
+
+### resource files
+
+The model requires a resources files with various textures and meshes from different sources. We include a [single example](https://github.com/twak/winsyn/tree/main/resources) resource of each type - these are enough to run the code, but do not have much diversity. Running the model with only these resources will not match our results... The [`config.py`](https://github.com/twak/winsyn/blob/main/src/config.py) file defines `resource_path` which should be the location of the resources folder.
+
+* The 3D clutter scenes can be downloaded from the [KAUST datastore](https://doi.org/10.25781/KAUST-5E9C0). They should be added added to the `exterior_clutter` folder. 
+
+* The script [`import_google_panos.py`](https://github.com/twak/winsyn/blob/main/import/import_google_panos.py) can be used to download the panoramas used for the published dataset. It takes a single argument: your resource folder, and downloads images here in the subfolder `outside`.
+  - Alternately, download a [different set of panoramas from google directly](https://sites.google.com/view/streetlearn/dataset).
+
+* Signs can be downloaded from the [Kaust datastore](https://repository.kaust.edu.sa/handle/10754/686575). They should be in the `signs` folder of your resource folder. The downloaded and unzipped files can be split into folders `large`, `medium`, and `small` using the script [`split_signs.py`](https://github.com/twak/winsyn/blob/main/import/import_signs.py). It takes two arguments - the root folder of the unzipped signs dataset and the resource folder.
+
+* The interior textures are from matterport. 
+  * You can download them by following the instructions (involving sending them a form and getting a [download script](https://github.com/jlin816/dynalang/blob/0da77173ee4aeb975bd8a65c76ddb187fde8de81/scripts/download_mp.py#L4))
+  * Run the script thusly to download all the interior panoramas:
+  ```
+  download_mp.py /a/location --type matterport_skybox_images 
+  ```
+ * extract and convert the downloaded skyboxes into the panoramic image format using the script [`import_matterport.py`](https://github.com/twak/winsyn/blob/main/import/import_matterport.py). It takes two arguments: the root of the downloaded panoramas and your resource folder.
+
+* If you wish to generate the variant with many textures (`texture_rot`), download and unzip the [dtd](https://www.robots.ox.ac.uk/~vgg/data/dtd/) dataset into the `dtd` folder inside your resource folder.
 
 ### variations
 
