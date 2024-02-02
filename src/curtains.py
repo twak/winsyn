@@ -4,7 +4,7 @@ import bpy
 import random
 from functools import partial
 from mathutils import Vector
-from src import rantom, splittable
+from src import rantom, splittable, config
 from src import utils
 from src import splittable as split
 from src import profile    as prof
@@ -79,59 +79,60 @@ class Curtains:
         match self.r2.weighted_int([2,1,1,1,3], "curtain_type", "Curtains, blinds, internal shutters, or none"):
 
             case 0: # curtains
-                ideal_width=self.r2.uniform(0.4, 1, "per_curtain_width")
+                if config.physics:
+                    ideal_width=self.r2.uniform(0.4, 1, "per_curtain_width")
 
-                if r[3] > 2.5 * ideal_width and self.r2.uniform(0, r[3], "curtains_many") > 3: # many curtains
-                    c_count =  math.ceil( r[3] / ideal_width )
-                else: # one or two curtains usually
-                    c_count = 1 if r[3] < ideal_width else 2
+                    if r[3] > 2.5 * ideal_width and self.r2.uniform(0, r[3], "curtains_many") > 3: # many curtains
+                        c_count =  math.ceil( r[3] / ideal_width )
+                    else: # one or two curtains usually
+                        c_count = 1 if r[3] < ideal_width else 2
 
-                c_width = (r[3]+2*expand)/c_count
-                
-                mat = Materials(geom).got_curtain(self.r2)
+                    c_width = (r[3]+2*expand)/c_count
 
-                for c in range (c_count):
+                    mat = Materials(geom).got_curtain(self.r2)
 
-                    bunch_type = self.r2.randrange(4, "curtain_bunch_direction", "Do curtains bunch vertically, horizontally, drape etc...?")
-    
-                    height = r[4]
-                    no_support = False
+                    for c in range (c_count):
 
-                    # lowered height, not at top of frame
-                    if c_count == 1 and (bunch_type == 3 or bunch_type == 1) and height > 0.5 and self.r2.randrange(4, "curtain_reduced_height_chance") == 0:
-                        height *= self.r2.uniform(0.4, 0.8, "reduced_height_curtain")
-                        no_support = True
+                        bunch_type = self.r2.randrange(4, "curtain_bunch_direction", "Do curtains bunch vertically, horizontally, drape etc...?")
 
-                    left = None
+                        height = r[4]
+                        no_support = False
 
-                    if c == 0:
-                        left = False
-                    elif c == c_count -1:
-                        left = True
-                    
-                    if left == None or c_count == 1:
-                        left = self.r2.randrange(2, f"curtain_side_{c}") == 0
+                        # lowered height, not at top of frame
+                        if c_count == 1 and (bunch_type == 3 or bunch_type == 1) and height > 0.5 and self.r2.randrange(4, "curtain_reduced_height_chance") == 0:
+                            height *= self.r2.uniform(0.4, 0.8, "reduced_height_curtain")
+                            no_support = True
 
-                    curtain = self.cloth_curtains ( [r[0] + c * c_width - expand, r[1] - expand, r[2]], c_width, height + 2 * expand,
-                                        cloth_settings=cloth_settings, steps=steps, left=left, bunch_type=bunch_type, no_support=no_support)
+                        left = None
 
-                    curtain.location = blind_ob.location
-                    curtain.location.y += 0.03
-                    curtain.rotation_euler = blind_ob.rotation_euler
+                        if c == 0:
+                            left = False
+                        elif c == c_count -1:
+                            left = True
 
-                    if self.r2.randrange(10, "different_curtain_material") == 0:
-                        mat = Materials(geom).got_curtain(self.r2)
+                        if left == None or c_count == 1:
+                            left = self.r2.randrange(2, f"curtain_side_{c}") == 0
 
-                    curtain.data.materials.append(mat)
+                        curtain = self.cloth_curtains ( [r[0] + c * c_width - expand, r[1] - expand, r[2]], c_width, height + 2 * expand,
+                                            cloth_settings=cloth_settings, steps=steps, left=left, bunch_type=bunch_type, no_support=no_support)
 
-                    curtainOBs.append ( curtain )
+                        curtain.location = blind_ob.location
+                        curtain.location.y += 0.03
+                        curtain.rotation_euler = blind_ob.rotation_euler
 
-                for window_comp in geom["frameOBs"] + geom["frameGlassOBs"] + [geom['int_wall_side']]: # collide against whole window
-                    mod = window_comp.modifiers.new('wc', 'COLLISION')
-                    mod.settings.use_culling = False
+                        if self.r2.randrange(10, "different_curtain_material") == 0:
+                            mat = Materials(geom).got_curtain(self.r2)
+
+                        curtain.data.materials.append(mat)
+
+                        curtainOBs.append ( curtain )
+
+                    for window_comp in geom["frameOBs"] + geom["frameGlassOBs"] + [geom['int_wall_side']]: # collide against whole window
+                        mod = window_comp.modifiers.new('wc', 'COLLISION')
+                        mod.settings.use_culling = False
 
 
-                geom["do_physics"] = True
+                    geom["do_physics"] = True
 
             case 1: # venetian blinds
                 Curtains.slat_o_matic(blind_ob, "venetian", curtainOBs, r, Materials(geom).got_blinds(self.r2))
