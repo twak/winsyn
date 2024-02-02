@@ -1475,6 +1475,10 @@ class Materials:
 
         print (f"creating geometry with seed {int(seed)}")
 
+        if "root/_seed" in param_override:
+            seed = param_override["root/_seed"]
+            print (f"seed overriden by parameter file to: {seed}")
+
         if style == "rgb" or style.endswith("nwall"):
 
             geom = utils.cleanup_last_scene()
