@@ -67,7 +67,7 @@ importlib.reload( shutter  )
 if config.interactive: # used for development/one-off renders.
 
     # hard coded seed/parameters for debugging.
-    seed = 1706642979540530925 # a pair of bay windows
+    seed = 1706642979540530925 # a pair of bay windows!
     # otherwise, random-by-time with seed = time.time_ns()
     params = {}
 
