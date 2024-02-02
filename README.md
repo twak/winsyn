@@ -1,6 +1,6 @@
 # WinSyn: Synthetic Procedural Model
 
-WinSyn is a research project to provide a matched pair of synthetic and real images for machine learning tasks such as segmentation. You can read the [paper](https://arxiv.org/abs/2310.08471) online.
+WinSyn is a research project to provide a matched pair of synthetic and real images for machine learning tasks such as segmentation. You can read the [paper](https://arxiv.org/abs/2310.08471) or watch a [video](https://youtu.be/Ri-1iq4PBuc) showing how to run the procedural model.
 
 <img src='https://github.com/twak/winsyn/blob/main/winsyn.jpg' width='300'>
 
