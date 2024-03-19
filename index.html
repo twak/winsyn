@@ -1,6 +1,147 @@
 <html>
-   <head> <meta name="viewport" content="width=device-width, initial-scale=1.0"> </head>
+  <head> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WinSyn: A High Resolution Testbed for Synthetic Data</title>
+    <style>
+      body {
+	margin: 2em auto;
+	max-width: 45em;
+	padding-left: 1em;
+	padding-right: 1em;
+      }
+
+      body,
+button,
+input,
+select,
+optgroup,
+textarea {
+	color: #404040;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-size: 1rem;
+	line-height: 1.5;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	clear: both;
+}
+
+p {
+	margin-bottom: 1.5em;
+}
+
+dfn,
+cite,
+em,
+i {
+	font-style: italic;
+}
+
+@font-face {
+    font-family: ShortcodesUltimateIcons;
+    src: url(forkawesome-webfont.eot);
+    font-weight: 400;
+    font-style: normal;
+    font-display: block
+}
+
+.sui {
+    display: inline-block;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+}
+
+.sui-file-github-o:before {
+    content: '';
+    background:url('github-mark-white.svg');
+    background-size:cover;
+        position:absolute;
+    width:16px;
+    height:16px;
+    margin-left:-21px;
+}
+.sui-file-pdf-o:before {
+    content: '';
+    background:url('pdf.svg');
+    background-size:cover;
+        position:absolute;
+    width:16px;
+    height:16px;
+    margin-left:-21px;
+}
+
+
+.su-button {
+    display: inline-block!important;
+    text-align: center;
+    text-decoration: none!important;
+    box-sizing: content-box!important;
+    padding-left:20px;
+    padding-top:2px;
+}
+
+.su-button-style-default {
+    border-width: 1px;
+    border-style: solid
+}
+
+.center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+    </style>
+  </head>
    <body>
-     <h1> WinSyn </h1>
+     <h1>WinSyn: A High Resolution Testbed for Synthetic Data</h1>
+
+     <p align="right">
+       <a href="https://twak.org">Tom Kelly</a>, <a href="https://miamioh.edu/profiles/cec/john-femiani.html">John Femiani</a>, and <a href="https://peterwonka.net/">Peter Wonka</a>
+<br/>
+       Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, 2024
+       </p>
+
+     <div align="right">
+<a href="/winsyn.pdf" class="su-button su-button-style-default" style="color:#FFFFFF;background-color:#000;border-color:#000000;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px" target="_self"><span style="color:#FFFFFF;padding:3px 8px;font-size:13px;line-height:20px;border-color:#4d4d4d;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;text-shadow:none;-moz-text-shadow:none;-webkit-text-shadow:none"><div class="sui sui-file-pdf-o" style="color:#FFFFFF">pdf</div></span></a>
+<a href="https://github.com/twak/winsyn_metadata" class="su-button su-button-style-default" style="color:#FFFFFF;background-color:#000;border-color:#000000;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px" target="_self"><span style="color:#FFFFFF;padding:3px 8px;font-size:13px;line-height:20px;border-color:#4d4d4d;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;text-shadow:none;-moz-text-shadow:none;-webkit-text-shadow:none"><div class="sui sui-file-github-o" style="color:#FFFFFF">data</div></span></a>
+</div>
+     <p>We present WinSyn, a unique dataset and testbed for creating high-quality synthetic data with procedural modeling techniques. The dataset contains high-resolution photographs of windows, selected from locations around the world, with 89,318 individual window crops showcasing diverse geometric and material characteristics. We evaluate
+a procedural model by training semantic segmentation networks on both synthetic and real images and then comparing their performances on a shared test set of real images. Specifically, we measure the difference in mean Intersection over Union (mIoU) and determine the effective number of real images to match synthetic data’s training performance.
+       We design a baseline procedural model as a benchmark and provide 21,290 synthetically generated images. By tuning the procedural model, key factors are identified which significantly influence the model’s fidelity in replicating real-world scenarios. Importantly, we highlight the challenge of procedural modeling using current techniques, especially in their ability to replicate the spatial semantics of real-world scenarios. This insight is critical because of the potential of procedural models to bridge to hidden scene aspects such as depth, reflectivity, material properties, and lighting conditions.</p>
+     <p align="center"><img src="teaser.jpg" width="100%" class="center"/>
+     <i>Photographers in 28 geographic regions captured real-world photos (a) of windows that are cropped (b) to single windows, which are then labeled (c). Synthetic windows are rendered giving color (f) and labels(d), while other variations such as depth (e) are possible.</i>
+</p>
+
+     <p><h3>Resources:</h3>
+       <p>
+	 <ul>
+	   <li><a href="supp.pdf">Supplemental</a> (100Mb)</li>
+	   <li>Pre-cooked datasets<a href=""></a> </li>
+	   <ul dir="auto">
+	     <li><a href="http://dx.doi.org/10.25781/KAUST-8YL8A" rel="nofollow">9k labeled real photos at 1024px resolution</a></li>
+	     <li><a href="http://dx.doi.org/10.25781/KAUST-8YL8A" rel="nofollow">89k 512px crops or 97k 1024px crops</a></li>
+	     <li><a href="http://dx.doi.org/10.25781/KAUST-LWC2Z" rel="nofollow">72k 2024px photos of windows</a></li>
+	     <li><a href="https://vision.csi.miamioh.edu/data/archinet_public/winsynthetic_jpg_v0.zip" rel="nofollow">synthetic renders of windows and variations (alpha release)</a></li>
+	     <li><a href="https://vision.csi.miamioh.edu/data/archinet_public/winsynthetic_jpg_ms_v0.zip" rel="nofollow">synthetic renders of windows: render-time "ms" dataset (alpha release)</a></li>
+	   </ul>
+	 <li><a href="https://github.com/twak/winsyn_metadata">Instruction to access the meta and raw data</a></li>
+	 <li><a href="https://github.com/twak/winsyn">Synthetic model</a></li>
+	 </ul>
+     </p>
+
+
+       <p align="center">
+     <img src="synth_vs_real.jpg"width="50%" class="center"/>
+     <i>Selected real and synthetic/procedural examples from the testbed.</i></p>
+     <p align="center">
+       <img src="datasize.png"width="90%" class="center"/>
+       <i>WinSyn has an appropriate level of complexity to study the synthetic data problem in the lab. Here we see the segmentation task axis (mIoU) for different and sizes of training data. s/r trains on <b>s</b>ynthetic with varying numbers samples, and evaluates on 4.9k <b>r</b>eal.</i></p>
+     
+     <p align="center"> <img src="nmat.png"width="80%" class="center"/>
+     <i>We are also able to consider a large number of synthetic model variations. Here we experiment with the impact of the number materials available for the wall geometry (n) on segmentation task performance (mIoU).</i></p>
  </body>
 </html>
