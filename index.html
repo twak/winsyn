@@ -123,9 +123,6 @@ i {
 a procedural model by training semantic segmentation networks on both synthetic and real images and then comparing their performances on a shared test set of real images. Specifically, we measure the difference in mean Intersection over Union (mIoU) and determine the effective number of real images to match synthetic data’s training performance.
        We design a baseline procedural model as a benchmark and provide 21,290 synthetically generated images. By tuning the procedural model, key factors are identified which significantly influence the model’s fidelity in replicating real-world scenarios. Importantly, we highlight the challenge of procedural modeling using current techniques, especially in their ability to replicate the spatial semantics of real-world scenarios. This insight is critical because of the potential of procedural models to bridge to hidden scene aspects such as depth, reflectivity, material properties, and lighting conditions.</p>
      <p>
-            <p align="center"><img src="teaser.jpg" width="100%" class="center"/>
-     <i>Photographers in 28 geographic regions captured real-world photos (a) of windows that are cropped (b) to single windows, which are then labeled (c). Synthetic windows are rendered giving color (f) and labels(d), while other variations such as depth (e) are possible.</i>
-</p>
 
 <script>
     	    function setPane(name, desc) {
@@ -439,7 +436,9 @@ a procedural model by training semantic segmentation networks on both synthetic 
      </p>
 
 <h3>Figures</h3>
-       
+            <p align="center"><img src="teaser.jpg" width="100%" class="center"/>
+     <i>Photographers in 28 geographic regions captured real-world photos (a) of windows that are cropped (b) to single windows, which are then labeled (c). Synthetic windows are rendered giving color (f) and labels(d), while other variations such as depth (e) are possible.</i>
+</p>       
        <p align="center">
      <img src="synth_vs_real.jpg"width="50%" class="center"/>
      <i>Selected real and synthetic/procedural examples from the testbed.</i></p>
