@@ -94,6 +94,12 @@ i {
   margin-left: auto;
   margin-right: auto;
 }
+
+.highlight>div:hover {
+    background-color: #ffffff;
+    opacity: 0.6;
+}
+
     </style>
             <link rel="icon" href="https://twak.org/wp-content/uploads/2024/03/cropped-favicon-32x32.png" sizes="32x32">
         <link rel="icon" href="https://twak.org/wp-content/uploads/2024/03/cropped-favicon-192x192.png" sizes="192x192">
@@ -133,9 +139,10 @@ a procedural model by training semantic segmentation networks on both synthetic 
             document.getElementById("demo_pane").src = "imgs/"+name+".png";
 	      }
 	      function setRGB(desc) {
-	        desc_showing = desc;
-            document.getElementById("demo_pane").src = "imgs/"+demo_showing+".jpg";
-            document.getElementById("demo_desc").innerHTML = desc_showing
+	          desc_showing = desc;
+		  document.getElementById("demo_pane").src = ""
+		  document.getElementById("demo_pane").src = "imgs/"+demo_showing+".jpg";
+		  document.getElementById("demo_desc").innerHTML = desc_showing
 	      }
 	      function showHoverRGB(name, desc){
 //            document.getElementById("demo_pane").src = "imgs/"+name+".jpg";
@@ -148,7 +155,8 @@ a procedural model by training semantic segmentation networks on both synthetic 
     setPane('5330d4412916534fbbcb99ab64bb4557','real<br/>name: 5330d4412916534fbbcb99ab64bb4557');
  }
     </script>
-        <div style="position: relative; width:49%; max-width:512px; display:inline-block;"><img src="index.jpg" style="width: 100%; height: auto;"><div style="position:absolute; left:0.0%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('5330d4412916534fbbcb99ab64bb4557', 'real<br/>name: 5330d4412916534fbbcb99ab64bb4557');" onmouseenter="showHoverRGB('5330d4412916534fbbcb99ab64bb4557', 'real<br/>name: 5330d4412916534fbbcb99ab64bb4557');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('5330d4412916534fbbcb99ab64bb4557');"></div>
+<div class="highlight" style="position: relative; width:49%; max-width:512px; display:inline-block;"><img src="index.jpg" style="width: 100%; height: auto;">
+<div style="position:absolute; left:0.0%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('5330d4412916534fbbcb99ab64bb4557', 'real<br/>name: 5330d4412916534fbbcb99ab64bb4557');" onmouseenter="showHoverRGB('5330d4412916534fbbcb99ab64bb4557', 'real<br/>name: 5330d4412916534fbbcb99ab64bb4557');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('5330d4412916534fbbcb99ab64bb4557');"></div>
 <div style="position:absolute; left:6.25%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('01694998813030828260', 'synthetic<br/>name: 01694998813030828260');" onmouseenter="showHoverRGB('01694998813030828260', 'synthetic<br/>name: 01694998813030828260');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('01694998813030828260');"></div>
 <div style="position:absolute; left:12.5%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('01694992173012451077', 'synthetic<br/>name: 01694992173012451077');" onmouseenter="showHoverRGB('01694992173012451077', 'synthetic<br/>name: 01694992173012451077');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('01694992173012451077');"></div>
 <div style="position:absolute; left:18.75%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('01694961731227721226', 'synthetic<br/>name: 01694961731227721226');" onmouseenter="showHoverRGB('01694961731227721226', 'synthetic<br/>name: 01694961731227721226');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('01694961731227721226');"></div>
