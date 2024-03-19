@@ -138,8 +138,8 @@ a procedural model by training semantic segmentation networks on both synthetic 
             document.getElementById("demo_desc").innerHTML = desc_showing
 	      }
 	      function showHoverRGB(name, desc){
-            document.getElementById("demo_pane").src = "imgs/"+name+".jpg";
-            document.getElementById("demo_desc").innerHTML = desc
+//            document.getElementById("demo_pane").src = "imgs/"+name+".jpg";
+//            document.getElementById("demo_desc").innerHTML = desc
 	      }
 	      function hideHoverRGB() {
 		    setRGB(desc_showing);
@@ -148,7 +148,6 @@ a procedural model by training semantic segmentation networks on both synthetic 
     setPane('5330d4412916534fbbcb99ab64bb4557','real<br/>name: 5330d4412916534fbbcb99ab64bb4557');
  }
     </script>
-    
         <div style="position: relative; width:49%; max-width:512px; display:inline-block;"><img src="index.jpg" style="width: 100%; height: auto;"><div style="position:absolute; left:0.0%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('5330d4412916534fbbcb99ab64bb4557', 'real<br/>name: 5330d4412916534fbbcb99ab64bb4557');" onmouseenter="showHoverRGB('5330d4412916534fbbcb99ab64bb4557', 'real<br/>name: 5330d4412916534fbbcb99ab64bb4557');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('5330d4412916534fbbcb99ab64bb4557');"></div>
 <div style="position:absolute; left:6.25%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('01694998813030828260', 'synthetic<br/>name: 01694998813030828260');" onmouseenter="showHoverRGB('01694998813030828260', 'synthetic<br/>name: 01694998813030828260');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('01694998813030828260');"></div>
 <div style="position:absolute; left:12.5%; top:0.0%; width:6.25%; height:6.25%;" onclick="setPane('01694992173012451077', 'synthetic<br/>name: 01694992173012451077');" onmouseenter="showHoverRGB('01694992173012451077', 'synthetic<br/>name: 01694992173012451077');" onmouseleave="hideHoverRGB()" onmousedown="setLabel2('01694992173012451077');"></div>
@@ -410,7 +409,8 @@ a procedural model by training semantic segmentation networks on both synthetic 
 <div style="opacity: 0.7; background:#000; color:#FFF; padding: 0px 6px 0px 6px; position: absolute; bottom: 5px; left:5px; border-color:#000000;border-radius:5px;-moz-border-radius:5px;-webkit-border-radius:5px;"><p id="demo_desc" style="margin-block-start: 2px; margin-block-end: 2px;">click on images on the left for more information</p></div>
 <img src="imgs/01695035926625075936.jpg" id="demo_pane" style="width:100%; aspect-ratio : 1 / 1;" onmouseenter="setLabel();" onmouseleave="hideHoverRGB()">
 </div>
-
+<p align="center">
+     <i>Random samples from the synthetic and real datasets. Click and hold (or hover over right pane) to see labels.</i> </p>
 
        <h3>Resources</h3>
        <p>
