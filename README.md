@@ -140,9 +140,7 @@ In addition, if there is an existing parameter (attribs) file for that seed (i.e
 
 We thank the blender procedural artists Gabriel de Laubier for the [UCP Wood material](https://www.blendernation.com/2017/10/20/procedural-cc-0-pbr-wood-shader/) and Simon Thommes for the fantastic [Br'cks material](https://simonthommes.gumroad.com/l/Brcks). Both were modified and used in our procedural model.
 
-### citing
-
-Please site the below [paper](https://arxiv.org/abs/2310.08471) if you use our work.
+### cite
 
 ```
 @inproceedings{winsyn,
