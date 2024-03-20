@@ -4,7 +4,7 @@ WinSyn is a research project to provide a matched pair of synthetic and real ima
 
 <img src='https://github.com/twak/winsyn/blob/main/winsyn.jpg' width='300'>
 
-This repository contains code for running the synthetic procedural model. We also created matching photos of [75k real windows](https://github.com/twak/winsyn_metadata).
+This repository contains code for running the synthetic procedural model. We also took photos of [75k real windows](https://github.com/twak/winsyn_metadata).
 
 ### setting up
 
