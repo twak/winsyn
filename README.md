@@ -35,7 +35,7 @@ We use [Blender 3.3](https://ftp.nluug.nl/pub/graphics/blender//release/Blender3
 * Open the [`winsyn.blend`](https://github.com/twak/winsyn/blob/main/winsyn.blend) file in Blender 3.3. 
 * Open a text pane in blender with the [`go.py`](https://github.com/twak/winsyn/blob/main/src/go.py) script
 * Optional: Set the `resource_path` in [config.py](https://github.com/twak/winsyn/blob/main/src/config.py#L13) to where you downloaded the resource files (see below)
-* Run the script! Generation time varies from 20 sections to a few minutes. Blender hangs during generation. Some generation may take a very long time depending on the parameters selected.
+* Run the script! Generation time varies from 20 seconds to a few minutes. Blender hangs during generation. Some generation may take a very long time depending on the parameters selected.
 * Debugging requires a more challenging setup, I use Pycharm with something like [this](https://code.blender.org/2015/10/debugging-python-code-with-pycharm/) combined with the commented out [`pydevd_pycharm.settrace`](https://github.com/twak/winsyn/blob/main/src/go.py#L66) lines in `go.py`. The workflow goes something like - edit code in pycharm, switch to blender to run, switch back to pycharm to set breakpoints/inspect elements.
 
 ### running headless
