@@ -88,7 +88,7 @@ The model requires a resources files with various textures and meshes from diffe
   ```
   download_mp.py /a/location --type matterport_skybox_images 
   ```
- * extract and convert the downloaded skyboxes into the panoramic image format using the script [`import_matterport.py`](https://github.com/twak/winsyn/blob/main/import/import_matterport.py). It takes two arguments: the root of the downloaded panoramas and your resource folder.
+  * extract and convert the downloaded skyboxes into the panoramic image format using the script [`import_matterport.py`](https://github.com/twak/winsyn/blob/main/import/import_matterport.py). It takes two arguments: the root of the downloaded panoramas and your resource folder.
 
 * If you wish to generate the variant with many textures (`texture_rot`), download and unzip the [dtd](https://www.robots.ox.ac.uk/~vgg/data/dtd/) dataset into the `dtd` folder inside your resource folder.
 
